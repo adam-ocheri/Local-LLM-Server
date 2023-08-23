@@ -29,8 +29,6 @@ def on_model_set(name=""):
     active_model = ModelHF(active_model_name, "/LLMs-Flask/models/" + active_model_name)
 
 
-# on_model_set(active_model_name)
-
 #! ROUTES - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
@@ -64,22 +62,22 @@ def prompt_extraction_middleware(view_func):
     return wrapper
 
 
-# def select_active_model(view_func):
-#     @wraps(view_func)
-#     def wrapper(*args, **kwargs):
-#         requested_model_name = request.args.get("model")
+def select_active_model(view_func):
+    @wraps(view_func)
+    def wrapper(*args, **kwargs):
+        requested_model_name = request.args.get("model")
 
-#         if requested_model_name != active_model_name:
-#             on_model_set(requested_model_name)  #! Find a way to Async/Await here!
+        if requested_model_name != active_model_name:
+            on_model_set(requested_model_name)  #! Find a way to Async/Await here!
 
-#         return view_func(*args, **kwargs)
+        return view_func(*args, **kwargs)
 
-#     return wrapper
+    return wrapper
 
 
 @app.route("/gen", methods=["POST"])
 @prompt_extraction_middleware
-# @select_active_model
+@select_active_model
 def generate(prompt):
     # prompt = request.json.get("prompt")
     input_text = prompt
