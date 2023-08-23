@@ -1,0 +1,19 @@
+version: '3'
+services:
+  flask-app:
+    build:
+      context: ./LLMs-Flask
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./LLMs-Flask/app:/app
+      # You might add more volumes or configuration here as needed
+
+  # node-server:
+  #   build:
+  #     context: ./node_server
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - LLMs-Flask
+    # You might add more configuration here as needed

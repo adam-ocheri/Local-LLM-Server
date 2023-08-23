@@ -1,0 +1,7 @@
+.vscode
+LLMs-Flask/.env
+LLMs-Flask/.vscode
+LLMs-Flask/models
+BackendAPI-Node/.vscode
+BackendAPI-Node/node_modules
+BackendAPI-Node/node_modules/@types
