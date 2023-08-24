@@ -24,16 +24,18 @@ active_model_name = "meta-llama/Llama-2-7b-hf"
 active_model = ModelHF(active_model_name, "/LLMs-Flask/models/" + active_model_name)
 
 
-def on_model_set(name=""):
+async def on_model_set(name=""):
     active_model_name = name
-    active_model = ModelHF(active_model_name, "/LLMs-Flask/models/" + active_model_name)
+    active_model = await ModelHF(
+        active_model_name, "/LLMs-Flask/models/" + active_model_name
+    )
 
 
 #! ROUTES - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
 @app.route("/", methods=["GET"])
-def test_front():
+async def test_front():
     return "<h1>Python LlamaV2 Hello!<h1>"
 
 
@@ -68,7 +70,8 @@ def select_active_model(view_func):
         requested_model_name = request.args.get("model")
 
         if requested_model_name != active_model_name:
-            on_model_set(requested_model_name)  #! Find a way to Async/Await here!
+            on_model_set(requested_model_name)
+            #! Find a way to Async/Await here!
 
         return view_func(*args, **kwargs)
 
@@ -85,7 +88,12 @@ def generate(prompt):
     outputs = active_model.model.generate(
         inputs, max_length=50, num_return_sequences=1, temperature=0.7
     )
+
     print("response is:", active_model.tokenizer.decode(outputs[0]))
+
+    # loop = asyncio.get_event_loop()
+    # loop.run_until_complete(generate())
+
     return jsonify({"response": active_model.tokenizer.decode(outputs[0])}), 200
 
 
