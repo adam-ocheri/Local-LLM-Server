@@ -9,7 +9,7 @@ COPY app/app.py /app/
 # Set the environment variable for the token
 ENV HF_TOKEN = ${HUGGINGFACE_TOKEN}
 
-RUN pip install --no-cache-dir -r requirements.txt && pip3 install torch --index-url https://download.pytorch.org/whl/cu117 && huggingface-cli login --token $HF_TOKEN
+RUN pip install --no-cache-dir -r requirements.txt && pip3 install torch --index-url https://download.pytorch.org/whl/cu117 && huggingface-cli login --token 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
 
 EXPOSE 5000
 

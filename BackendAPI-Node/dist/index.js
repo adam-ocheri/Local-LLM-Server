@@ -1,5 +1,5 @@
-"use strict";
-const express = require("express");
+// const express = require("express");
+import express from "express";
 const server = express();
 server.use("/", (req, res) => {
     res.json("HF Runtime Containers - Backend API service : Operational");

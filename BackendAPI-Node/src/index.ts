@@ -1,8 +1,8 @@
-const express = require("express");
+import express, { Response } from "express";
 
 const server = express();
 
-server.use("/", (req : any, res : any) => {
+server.use("/", (req : Request, res : Response | any) => {
     res.json("HF Runtime Containers - Backend API service : Operational");
 })
 
