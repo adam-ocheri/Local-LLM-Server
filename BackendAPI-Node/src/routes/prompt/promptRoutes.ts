@@ -1,5 +1,8 @@
-// const e = require("express");
+import express from "express"
+import { generateBasicPrompt } from "../../controllers/prompt/promptController.js";
 
-// const router = e.Router();
+const promptRouter = express.Router();
 
-// router.route("/", )
+promptRouter.route("/").post(generateBasicPrompt)
+
+export default promptRouter;

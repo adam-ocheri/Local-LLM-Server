@@ -21,7 +21,7 @@ CORS(app)
 
 global active_model
 active_model_name = "meta-llama/Llama-2-7b-hf"
-# active_model = ModelHF(active_model_name, "/LLMs-Flask/models/" + active_model_name)
+active_model = ModelHF(active_model_name, "/LLMs-Flask/models/" + active_model_name)
 
 
 def on_model_set(name=""):
