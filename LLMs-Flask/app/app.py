@@ -17,7 +17,7 @@ class ModelHF:
 
 app = Quart(__name__)
 #! HTF - enable `x-www-form-urlencoded` ContentType requests ??
-cors(app)
+# cors(app)
 
 global active_model
 active_model_name = "meta-llama/Llama-2-7b-hf"
@@ -34,47 +34,22 @@ async def on_model_set(name=""):
 #! ROUTES - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
+@app.after_request
+async def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "http://localhost:4000"
+    response.headers[
+        "Access-Control-Allow-Methods"
+    ] = "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+    response.headers[
+        "Access-Control-Allow-Headers"
+    ] = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
+
+
 @app.route("/", methods=["GET"])
 async def test_front():
-    return "<h1>Python LlamaV2 Hello!<h1>"
-
-
-# async def prompt_extraction_middleware(view_func):
-#     @wraps(view_func)
-#     async def wrapper(*args, **kwargs):
-#         print(
-#             "REQUESTING ----------------------------------------------------------------------"
-#         )
-#         mimetype = request.mimetype
-#         if mimetype == "application/x-www-form-urlencoded":
-#             data = await request.form
-#         elif mimetype == "multipart/form-data":
-#             data = await dict(request.form)
-#         elif mimetype == "application/json":
-#             data = await request.json
-#         else:
-#             data = (await request.data).decode()
-
-#         print(mimetype, data, type(data))
-
-#         kwargs["prompt"] = data["prompt"]
-
-#         return view_func(*args, **kwargs)
-
-#     return wrapper
-
-
-# async def select_active_model(view_func):
-#     @wraps(view_func)
-#     async def wrapper(*args, **kwargs):
-#         requested_model_name = request.args.get("model")
-
-#         if requested_model_name != active_model_name:
-#             await on_model_set(requested_model_name)
-
-#         return view_func(*args, **kwargs)
-
-#     return wrapper
+    return "<h1> HuggingFace AI Container Endpoint - ~!!!hElLoWOrLd!!!~ <h1>"
 
 
 @app.route("/gen", methods=["POST"])
@@ -91,4 +66,4 @@ async def generate():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0")
+    app.run()
