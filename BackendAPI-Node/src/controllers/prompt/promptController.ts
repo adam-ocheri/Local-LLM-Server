@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseAPI_URL = `http://quart-app:5000/`;
+const baseAPI_URL = process.env?.NODE_ENV == 'production' ? `http://quart-app:5000/` : `http://localhost:5000/`;
 
 //TODO Queue system - Job-Id - extend timeout time
 export async function generateBasicPrompt(req : any, res : any)  {

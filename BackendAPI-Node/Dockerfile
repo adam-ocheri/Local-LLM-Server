@@ -1,6 +1,7 @@
 # Use an official Node.js runtime as the base image
 FROM node:18
 
+ENV NODE_ENV=production
 # Set the working directory in the container to /app
 WORKDIR /
 
@@ -12,8 +13,6 @@ COPY . .
 # Install the application dependencies
 # Note: If you are building your code for production, use `npm ci --only=production`
 RUN npm install && npx tsc
-
-
 
 # The application listens on port 4000, so you can use the EXPOSE instruction to have it mapped by the docker daemon
 EXPOSE 4000
