@@ -1,6 +1,6 @@
 version: '3'
 services:
-  flask-app:
+  quart-app:
     build:
       context: ./LLMs-Flask
     ports:
@@ -8,12 +8,11 @@ services:
     volumes:
       - ./LLMs-Flask/app:/app
       # You might add more volumes or configuration here as needed
-
-  # node-server:
-  #   build:
-  #     context: ./node_server
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - LLMs-Flask
+  nodejs-server:
+    build:
+      context: ./BackendAPI-Node
+    ports:
+      - "4000:4000"
+    depends_on:
+      - quart-app
     # You might add more configuration here as needed

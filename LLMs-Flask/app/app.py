@@ -36,7 +36,7 @@ async def on_model_set(name=""):
 
 @app.after_request
 async def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "http://localhost:4000"
+    response.headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:4000"
     response.headers[
         "Access-Control-Allow-Methods"
     ] = "GET, POST, OPTIONS, PUT, PATCH, DELETE"
@@ -57,6 +57,7 @@ async def generate():
     input_data = await request.get_json()
     prompt = input_data.get("prompt")
     input_text = prompt
+    # return jsonify({"responseIsWorking": input_text}), 200
     inputs = active_model.tokenizer.encode(input_text, return_tensors="pt")
     outputs = active_model.model.generate(
         inputs, max_length=50, num_return_sequences=1, temperature=0.7
@@ -66,4 +67,4 @@ async def generate():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0")  # host="0.0.0.0" ?

@@ -1,9 +1,10 @@
 import axios from "axios";
-const baseAPI_URL = `http://localhost:5000/`;
+const baseAPI_URL = `http://quart-app:5000/`;
 
+//TODO Queue system - Job-Id - extend timeout time
 export async function generateBasicPrompt(req : any, res : any)  {
     try {
-        
+        console.log("Got REQUEST: ", req.body);
         const headers = {
             'Content-Type': 'application/json'
         };

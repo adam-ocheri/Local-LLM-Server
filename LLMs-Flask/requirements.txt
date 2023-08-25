@@ -1,4 +1,0 @@
-Flask==2.3.2
-Flask_Cors==4.0.0
-setuptools==65.5.0
-transformers==4.31.0
