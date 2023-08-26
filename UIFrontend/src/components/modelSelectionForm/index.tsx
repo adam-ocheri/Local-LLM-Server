@@ -35,10 +35,10 @@ export default function ModelSelectionForm({providers} : {providers : IHFModel[]
         if (prompt === '') return;
 
         const headers = {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         };
 
-        const baseAPI_URL = process?.env?.NODE_ENV == 'production' ? `http://nodejs-server:4000/` : `http://localhost:4000/`;
+        const baseAPI_URL = process?.env?.NODE_ENV == 'production' ? `http://127.0.0.1:4000/` : `http://localhost:4000/`;
         const modelDirPath = `${provider}/${model}`
         setLoading(true);
         const response = await axios.post(baseAPI_URL + `api/prompt?modelName=${modelDirPath}`, {prompt}, {headers})

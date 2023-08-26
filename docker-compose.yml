@@ -7,7 +7,6 @@ services:
       - "5000:5000"
     volumes:
       - ./LLMs-Flask/app:/app
-      # You might add more volumes or configuration here as needed
   nodejs-server:
     build:
       context: ./BackendAPI-Node
@@ -15,4 +14,10 @@ services:
       - "4000:4000"
     depends_on:
       - quart-app
-    # You might add more configuration here as needed
+  ui-frontend:
+    build:
+      context: ./UIFrontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - nodejs-server

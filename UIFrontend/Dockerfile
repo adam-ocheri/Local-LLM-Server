@@ -12,11 +12,10 @@ COPY package*.json ./
 COPY . .
 # Install the application dependencies
 # Note: If you are building your code for production, use `npm ci --only=production`
-RUN npm install && npx tsc
-
+RUN npm install && npm run build
 
 # The application listens on port 4000, so you can use the EXPOSE instruction to have it mapped by the docker daemon
-EXPOSE 4000
+EXPOSE 3000
 
 # Define the command to run your app using CMD
-CMD [ "node", "dist/index.js"]
+CMD [ "npm", "run", "start" ]
