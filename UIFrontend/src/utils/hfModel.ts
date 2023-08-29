@@ -6,16 +6,16 @@ export interface IHFModel {
 const metaLlamaProvider : IHFModel = {
     provider : 'meta-llama',
     availableModels : [
-    "Llama-2-7b-hf",
-    "Llama-2-13b-hf",
-    "Llama-2-70b-hf"
+        "Llama-2-7b-hf",
+        "Llama-2-13b-hf",
+        "Llama-2-70b-hf"
     ]
 }
 const theBlokeProvider : IHFModel = {
     provider : 'the-Bloke',
     availableModels : [
-    "cookie",
-    "shmerkler",
+        "cookie",
+        "shmerkler",
     ]
 }
 
