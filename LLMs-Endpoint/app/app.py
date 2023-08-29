@@ -2,22 +2,11 @@
 from functools import wraps
 from quart import Quart, request, jsonify, json
 from quart_cors import cors
-from transformers import AutoTokenizer, AutoModelForCausalLM
-
-
-class ModelHF:
-    def __init__(self, model_name_or_path, cache_dir=None):
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            model_name_or_path, cache_dir=cache_dir + "/token"
-        )
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_name_or_path, cache_dir=cache_dir + "/model"
-        )
+from model_hf import ModelHF
 
 
 app = Quart(__name__)
-#! HTF - enable `x-www-form-urlencoded` ContentType requests ??
-# cors(app)
+cors(app)
 
 global active_model
 active_model_name = "meta-llama/Llama-2-7b-hf"
@@ -67,4 +56,4 @@ async def generate():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0")  # host="0.0.0.0" ?
+    app.run(host="0.0.0.0")

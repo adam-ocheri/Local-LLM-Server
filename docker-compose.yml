@@ -1,19 +1,19 @@
 version: '3'
 services:
-  quart-app:
+  llm-endpoint:
     build:
-      context: ./LLMs-Flask
+      context: ./LLMs-Endpoint
     ports:
       - "5000:5000"
     volumes:
-      - ./LLMs-Flask/app:/app
+      - ./LLMs-Endpoint/app:/app
   nodejs-server:
     build:
       context: ./BackendAPI-Node
     ports:
       - "4000:4000"
     depends_on:
-      - quart-app
+      - llm-endpoint
   ui-frontend:
     build:
       context: ./UIFrontend

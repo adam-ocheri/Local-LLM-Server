@@ -1,8 +1,8 @@
 .vscode
-LLMs-Flask/.env
-LLMs-Flask/.vscode
-LLMs-Flask/models
-LLMs-Flask/app/XVolatile.egg-info
+LLMs-Endpoint/.env
+LLMs-Endpoint/.vscode
+LLMs-Endpoint/models
+LLMs-Endpoint/app/XVolatile.egg-info
 BackendAPI-Node/.vscode
 BackendAPI-Node/node_modules
 BackendAPI-Node/node_modules/@types
