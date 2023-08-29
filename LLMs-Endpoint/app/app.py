@@ -1,5 +1,4 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-from functools import wraps
 from quart import Quart, request, jsonify, json
 from quart_cors import cors
 from model_hf import ModelHF
@@ -10,14 +9,15 @@ cors(app)
 
 global active_model
 active_model_name = "meta-llama/Llama-2-7b-hf"
-active_model = ModelHF(active_model_name, "/LLMs-Flask/models/" + active_model_name)
+active_model = ModelHF(active_model_name, "./LLMs-Endpoint/models/" + active_model_name)
 
 
 async def on_model_set(name=""):
     active_model_name = name
-    active_model = await ModelHF(
-        active_model_name, "/LLMs-Flask/models/" + active_model_name
+    active_model = await ModelHF.create(
+        active_model_name, "./LLMs-Endpoint/models/" + active_model_name
     )
+    return jsonify({"ModelUpdated": active_model_name}), 200
 
 
 #! ROUTES - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -53,6 +53,13 @@ async def generate():
     )
     response_text = active_model.tokenizer.decode(outputs[0])
     return jsonify({"response": response_text}), 200
+
+
+@app.route("/reload", methods=["POST"])
+async def reload():
+    in_model_name = request.args.get("model")
+    response = await on_model_set(in_model_name)
+    return response
 
 
 if __name__ == "__main__":

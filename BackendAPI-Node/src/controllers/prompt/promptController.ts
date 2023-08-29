@@ -16,3 +16,18 @@ export async function generateBasicPrompt(req : any, res : any)  {
         throw new Error(error)
     }
 }
+
+export async function reloadSelectedModel(req : any, res : any)  {
+    try {
+        console.log("Got REQUEST at `reloadSelectedModel`: ", req.body);
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        const {modelName} = req.query;
+        const response = await axios.post(baseAPI_URL + "reload" + `?model=${modelName}`, req.body, {headers});
+        res.json(response.data);
+
+    } catch (error : any) {
+        throw new Error(error)
+    }
+}
