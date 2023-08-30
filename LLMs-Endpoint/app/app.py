@@ -46,7 +46,6 @@ async def generate():
     input_data = await request.get_json()
     prompt = input_data.get("prompt")
     input_text = prompt
-    # return jsonify({"responseIsWorking": input_text}), 200
     inputs = active_model.tokenizer.encode(input_text, return_tensors="pt")
     outputs = active_model.model.generate(
         inputs, max_length=50, num_return_sequences=1, temperature=0.7

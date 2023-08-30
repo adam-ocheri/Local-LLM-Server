@@ -3,6 +3,7 @@
 import { postPrompt, requestModelChange } from "@/utils/apiService";
 import { IHFModel } from "@/utils/hfModel";
 import { ChangeEvent, useEffect, useState } from "react"
+import CSVEditor from "../csvEditor/CSVEditor";
 
 
 export default function ModelSelectionForm({providers} : {providers : IHFModel[]}) {
@@ -52,25 +53,15 @@ export default function ModelSelectionForm({providers} : {providers : IHFModel[]
 
         if (modelNeedsReloading) {
             const res = await requestModelChange({}, `${provider}/${model}`, setLoading, setResponse);
-            if (res.data) {
+            if (res) {
+                console.log("RELOADED AIFH Model!");
+                console.log(res);
                 const {ModelUpdated} = res.data;
                 setActiveModel(ModelUpdated);
             }
         } else {
             await postPrompt(prompt, activeModel, setLoading, setResponse);
         }
-
-        // const headers = {
-        //     'Content-Type': 'application/json',
-        // };
-
-        // const baseAPI_URL = process?.env?.NODE_ENV == 'production' ? `http://127.0.0.1:4000/` : `http://localhost:4000/`;
-        // const modelDirPath = `${provider}/${model}`
-        // setLoading(true);
-        // const response = await axios.post(baseAPI_URL + `api/prompt?modelName=${modelDirPath}`, {prompt}, {headers})
-        // if (response.data) {
-        //     setResponse(response.data.response)
-        // }
     }
 
     const setProvider = (e : any) => {
@@ -139,6 +130,7 @@ export default function ModelSelectionForm({providers} : {providers : IHFModel[]
                     }}
                     > {modelNeedsReloading ? 'RELOAD' : 'Submit'}
                     </button>
+                    <CSVEditor/>
                 </div>
                 
             </form>

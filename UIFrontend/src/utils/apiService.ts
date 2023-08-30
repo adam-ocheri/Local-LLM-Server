@@ -21,7 +21,7 @@ export async function requestModelChange (data : any, newModel : string, setLoad
     setLoading(true);
     const response = await axios.post(baseAPI_URL + `api/prompt/reload?modelName=${newModel}`, {data}, {headers})
     if (response.data) {
-        setResponse(response.data.response)
+        setResponse(response.data.ModelUpdated)
     }
     
     return response;
