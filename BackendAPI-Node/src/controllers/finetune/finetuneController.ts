@@ -22,7 +22,7 @@ export async function triggerTrainingFromCSV(req : any, res : any)  {
           },
         });
         console.log('Python server response:', pythonServerResponse.data);
-        res.send('CSV uploaded and forwarded successfully :' + pythonServerResponse.data);
+        res.json(pythonServerResponse.data);
       } catch (error : any) {
         console.error('Error forwarding CSV data to Python server:', error?.message);
         res.status(500).send('Error forwarding CSV data to Python server.');
