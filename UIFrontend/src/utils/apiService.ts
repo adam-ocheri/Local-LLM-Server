@@ -26,3 +26,15 @@ export async function requestModelChange (data : any, newModel : string, setLoad
     
     return response;
 }
+
+export async function postCsvTrainingData (csvData : string, setLoading : any, setResponse : any) {
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+    console.log('Trying to Send CSV data for fine-tuning.......', csvData);
+    setLoading(true);
+    const response = await axios.post(baseAPI_URL + `api/fine-tune`, {csvData}, {headers})
+    if (response.data) {
+        setResponse(response.data.response)
+    }
+}

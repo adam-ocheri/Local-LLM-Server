@@ -6,7 +6,7 @@ import { ChangeEvent, useEffect, useState } from "react"
 import CSVEditor from "../csvEditor/CSVEditor";
 
 
-export default function ModelSelectionForm({providers} : {providers : IHFModel[]}) {
+export default function ModelSelection({providers} : {providers : IHFModel[]}) {
 
     // Data - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
     const [modelChoice, setModelChoice] = useState({
@@ -130,7 +130,7 @@ export default function ModelSelectionForm({providers} : {providers : IHFModel[]
                     }}
                     > {modelNeedsReloading ? 'RELOAD' : 'Submit'}
                     </button>
-                    <CSVEditor/>
+                    <CSVEditor setLoading={setLoading} setResponse={setResponse}/>
                 </div>
                 
             </form>
