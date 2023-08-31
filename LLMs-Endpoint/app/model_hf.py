@@ -1,4 +1,10 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSequenceClassification,
+    Trainer,
+    TrainingArguments,
+)
+from finetune import CustomTrainer
 
 
 class ModelHF:
@@ -6,7 +12,7 @@ class ModelHF:
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name_or_path, cache_dir=cache_dir + "/token"
         )
-        self.model = AutoModelForCausalLM.from_pretrained(
+        self.model = AutoModelForSequenceClassification.from_pretrained(
             model_name_or_path, cache_dir=cache_dir + "/model"
         )
 
@@ -16,3 +22,27 @@ class ModelHF:
         # You can perform any asynchronous setup or initialization here
         # if needed before returning the instance
         return instance
+
+    # @classmethod
+    async def train(
+        self,
+        train_dataset,
+        output_dir,
+        num_train_epochs=3,
+        per_device_train_batch_size=16,
+    ):
+        training_args = TrainingArguments(
+            output_dir=output_dir,
+            num_train_epochs=num_train_epochs,
+            per_device_train_batch_size=per_device_train_batch_size,
+        )
+        trainer = CustomTrainer(
+            model=self.model,
+            args=training_args,
+            train_dataset=train_dataset,
+            tokenizer=self.tokenizer,
+        )
+
+        trainer.train()
+
+        return "training completed"

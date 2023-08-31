@@ -2,7 +2,7 @@
 
 
 import ModelSelection from "@/components/modelSelection/ModelSelection";
-import { IHFModel, providersList } from "@/utils/hfModel"
+import { providersList } from "@/utils/hfModel"
 import { config } from "dotenv";
 import { useEffect } from "react";
 

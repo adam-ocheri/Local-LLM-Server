@@ -4,6 +4,7 @@ import { postPrompt, requestModelChange } from "@/utils/apiService";
 import { IHFModel } from "@/utils/hfModel";
 import { ChangeEvent, useEffect, useState } from "react"
 import CSVEditor from "../csvEditor/CSVEditor";
+import { Spinner } from "@chakra-ui/react";
 
 
 export default function ModelSelection({providers} : {providers : IHFModel[]}) {
@@ -138,7 +139,13 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
             <article style={{display: 'flex', alignItems: 'center', flexDirection: 'column',padding:'2%', margin: '8%', borderTop: '1px solid black'}}>
                 {loading &&
                 <div>
-                    LOADING...
+                    <Spinner
+                        thickness='4px'
+                        speed='0.65s'
+                        emptyColor='gray.200'
+                        color='blue.500'
+                        size='xl'
+                    />
                 </div>
                 }
 

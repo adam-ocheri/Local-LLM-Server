@@ -3,11 +3,15 @@ from quart import Quart, request, jsonify, json
 from quart_cors import cors
 import pandas as pd
 import io
+import torch
 from model_hf import ModelHF
+from datasets import Dataset
 
+torch.cuda.empty_cache()
 
 app = Quart(__name__)
 cors(app)
+print("ML Server starting...")
 
 global active_model
 active_model_name = "meta-llama/Llama-2-7b-hf"
@@ -74,12 +78,48 @@ async def process_csv():
     print("csv data: ", csv_data_str)
     # Convert CSV data to Pandas DataFrame
     df = pd.read_csv(io.StringIO(csv_data_str))
+    df = df.fillna("")
+    # TODO Process the DataFrame as needed - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    # Process the DataFrame as needed
-    print("Received DataFrame:")
-    print(df)
+    text_col = []
+    for _, row in df.iterrows():
+        prompt = ""
+        instruction = str(row["instruction"])
+        input_q = str(row["input"])
+        output_q = str(row["output"])
 
-    return jsonify({"response": "CSV data received and processed."}), 200
+        if len(input_q.strip()) == 0:
+            text = (
+                prompt
+                + "\n### Instruction: "
+                + instruction
+                + "\n### Expected Output: "
+                + output_q
+            )
+        else:
+            text = (
+                prompt
+                + "\n### Instruction: "
+                + instruction
+                + "\n### Input: "
+                + input_q
+                + "\n### Expected Output: "
+                + output_q
+            )
+
+        text_col.append(text)
+        print(df.head())
+
+    df.loc[:, "text"] = text_col
+    df.to_csv("./LLMs-Endpoint/app/train.csv", index=False)
+
+    # training - - - - - - - - - - - - - -
+    dataset = Dataset.from_pandas(df)
+    train = await active_model.train(dataset, output_dir="./LLMs-Endpoint/models")
+    if train == "training complete":
+        return jsonify({"response": "CSV data received and processed."}), 200
+
+    # TODO Return the data back - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
 if __name__ == "__main__":
