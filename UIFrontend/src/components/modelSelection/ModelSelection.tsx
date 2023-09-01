@@ -21,6 +21,7 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
     const [prompt, setPrompt] = useState('');
     const [response, setResponse] = useState('');
     const [loading, setLoading] = useState(false);
+    const [loadCycle, updateLoadCycle] = useState(0)
 
     const {provider, model, availableModels} = modelChoice;
 
@@ -31,6 +32,14 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
         availableModels: [...providers[0].availableModels]
       })
       setActiveModel(`${providers[0].provider}/${providers[0].availableModels[0]}`)
+
+      const INIT = async () => {
+        const initModel = `${providers[0].provider}/${providers[0].availableModels[0]}`;
+        const res = await requestModelChange({}, initModel, setLoading, setResponse);
+        return res;
+      }
+
+      INIT();
     }, [])
 
     useEffect(()=> {
