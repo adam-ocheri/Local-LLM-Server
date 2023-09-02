@@ -9,7 +9,7 @@ from transformers import (
     AutoTokenizer,
     BitsAndBytesConfig,
     HfArgumentParser,
-    Trainer,
+    # Trainer,
     TrainingArguments,
     DataCollatorForLanguageModeling,
     EarlyStoppingCallback,
@@ -17,8 +17,6 @@ from transformers import (
     logging,
     set_seed,
 )
-
-from transformers.utils import bitsandbytes as bnb
 
 from peft import (
     LoraConfig,
@@ -28,13 +26,12 @@ from peft import (
     AutoPeftModelForCausalLM,
 )
 from trl import SFTTrainer
+from finetune import init_finetuning, merge_weights
 
 # ! Definitions - Global Functions - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
-def create_bnb_config(
-    load_in_4bit, bnb_4bit_use_double_quant, bnb_4bit_quant_type, bnb_4bit_compute_dtype
-):
+def create_bnb_config():  # load_in_4bit, bnb_4bit_use_double_quant, bnb_4bit_quant_type, bnb_4bit_compute_dtype
     """
     Configures model quantization method using bitsandbytes to speed up training and inference
 
@@ -44,11 +41,24 @@ def create_bnb_config(
     :param bnb_4bit_compute_dtype: Computation data type for 4-bit model
     """
 
+    ################################################################################
+    # bitsandbytes parameters
+    ################################################################################
+
+    # Activate 4-bit precision base model loading
+    load_in_4bit = True
+
+    # Activate nested quantization for 4-bit base models (double quantization)
+    bnb_4bit_use_double_quant = True
+
+    # Quantization type (fp4 or nf4)
+    bnb_4bit_quant_type = "nf4"
+
+    # Compute data type for 4-bit base models
+    bnb_4bit_compute_dtype = torch.bfloat16
+
     bnb_config = BitsAndBytesConfig(
-        load_in_4bit=load_in_4bit,
-        bnb_4bit_use_double_quant=bnb_4bit_use_double_quant,
-        bnb_4bit_quant_type=bnb_4bit_quant_type,
-        bnb_4bit_compute_dtype=bnb_4bit_compute_dtype,
+        load_in_8bit=True, llm_int8_skip_modules=["lm_head"]
     )
 
     return bnb_config
@@ -141,35 +151,21 @@ def create_prompt_formats(sample):
 
 
 class ModelHF:
-    def __init__(self, model, tokenizer):
+    def __init__(self, model, tokenizer, model_name):
         self.tokenizer = tokenizer
         self.model = model
         self.dataset = None
+        self.model_name = model_name
 
     @classmethod
     async def create(cls, model_name_or_path, cache_dir=None):
         print("creating Model...", model_name_or_path)
-        # ! Avoiding 4bit quantization due to using v0.37.5 (min version for hf transformers' BitsAndBytesConfig needs >==0.39.0)
-        load_in_4bit = False
-        # ? Activate nested quantization for 4-bit base models (double quantization)
-        bnb_4bit_use_double_quant = False
-
-        # ? Quantization type (fp4 or nf4)
-        bnb_4bit_quant_type = "fp4"
-
-        # ? Compute data type for 4-bit base models
-        bnb_4bit_compute_dtype = torch.bfloat16
 
         # Create bnb config and load the model
         # You can perform any asynchronous setup or initialization here if needed before returning the instance
-        bnb_config = create_bnb_config(
-            load_in_4bit,
-            bnb_4bit_use_double_quant,
-            bnb_4bit_quant_type,
-            bnb_4bit_compute_dtype,
-        )
+        bnb_config = create_bnb_config()
         model, tokenizer = await load_model(model_name_or_path, cache_dir, bnb_config)
-        instance = cls(model, tokenizer)
+        instance = cls(model, tokenizer, model_name_or_path)
 
         return instance
 
@@ -252,7 +248,13 @@ class ModelHF:
             self.tokenizer, max_length, seed, dataset
         )
         self.dataset = preprocessed_dataset
-        return "Training finished with success"
+        print("Dataset preprocessed successfully")
         print(preprocessed_dataset)
-
         print(preprocessed_dataset[0])
+
+        return "CSV preprocessed successfully"
+
+    async def finetune_train(self):
+        train = await init_finetuning(self.model, self.tokenizer, self.dataset)
+        response = await merge_weights(self.model, self.model_name)
+        return response

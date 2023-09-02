@@ -8,9 +8,9 @@ from datasets import Dataset
 from model_hf import ModelHF
 import asyncio
 
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-# load_dotenv()
+load_dotenv()
 # import os
 
 # cuda_version = os.getenv("BNB_CUDA_VERSION")
@@ -41,7 +41,7 @@ async def init_model():
 set_active_model = lambda: asyncio.run(init_model())
 
 # Uncomment this line to immediately load model once the app runs:
-# app.active_model: ModelHF = set_active_model()
+app.active_model: ModelHF = set_active_model()
 
 
 async def on_model_set(name=""):
@@ -112,7 +112,8 @@ async def process_csv():
 
     # training - - - - - - - - - - - - - -
     dataset = Dataset.from_pandas(df)
-    train = await app.active_model.pre_train(dataset=dataset)
+    pre_train = await app.active_model.pre_train(dataset=dataset)
+    train = await app.active_model.finetune_train()
     # train = await active_model.train(dataset, output_dir="./LLMs-Endpoint/models")
     # if train == "training complete":
     return jsonify({"response": "CSV data received and processed.\n" + train}), 200

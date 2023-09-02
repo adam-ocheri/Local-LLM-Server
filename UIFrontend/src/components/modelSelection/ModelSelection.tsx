@@ -5,6 +5,7 @@ import { IHFModel } from "@/utils/hfModel";
 import { ChangeEvent, useEffect, useState } from "react"
 import CSVEditor from "../csvEditor/CSVEditor";
 import { Spinner } from "@chakra-ui/react";
+import FineTuner from "../fineTuner/FineTuner";
 
 
 export default function ModelSelection({providers} : {providers : IHFModel[]}) {
@@ -39,7 +40,7 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
         return res;
       }
 
-      INIT();
+    //   INIT();
     }, [])
 
     useEffect(()=> {
@@ -140,9 +141,10 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
                     }}
                     > {modelNeedsReloading ? 'RELOAD' : 'Submit'}
                     </button>
-                    <CSVEditor setLoading={setLoading} setResponse={setResponse}/>
+                    {/* <CSVEditor setLoading={setLoading} setResponse={setResponse}/> */}
+                    
                 </div>
-                
+                { !modelNeedsReloading && <FineTuner setLoading={setLoading} setResponse={setResponse}/>}
             </form>
             
             <article style={{display: 'flex', alignItems: 'center', flexDirection: 'column',padding:'2%', margin: '8%', borderTop: '1px solid black'}}>
