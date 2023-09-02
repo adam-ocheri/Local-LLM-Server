@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CSVEditor from '../csvEditor/CSVEditor';
 import { Badge, Box, Button, Flex, Text } from '@chakra-ui/react';
 
-function CSVCreator({ setLoading, setResponse, inCsv } : any) {
+function CSVCreator({ setLoading, setResponse, setCsv, inCsv  } : any) {
     const [tableData, setTableData] = useState(
     [
         ['Column 1', 'Column 2', 'Column 3', ''],
@@ -21,8 +21,9 @@ function CSVCreator({ setLoading, setResponse, inCsv } : any) {
     useEffect(() => {
         // Parse the CSV data when the csvData prop changes
         if (csvData) {
-        const parsedData = parseCSV(csvData);
-        setTableData(parsedData);
+            const parsedData = parseCSV(csvData);
+            setCsv(formatCSV(parsedData));
+            setTableData(parsedData);
         }
     }, [csvData]);
 
@@ -54,11 +55,10 @@ function CSVCreator({ setLoading, setResponse, inCsv } : any) {
         setTableData(updatedData);
     };
 
-    const exportCSV = () => {
+    const formatCSV = (csv : any) => {
         // Convert the table data into CSV format
-        const csvContent = tableData.map((row : any) => row.join(',')).join('\n');
-        console.log(csvContent);
-        // You can use this CSV content as needed, e.g., send it to a server or display it to the user.
+        const csvContent = csv.map((row : any) => row.join(',')).join('\n');
+        return csvContent;
     };
 
     return (
@@ -67,7 +67,7 @@ function CSVCreator({ setLoading, setResponse, inCsv } : any) {
                 <Box>
                     <Badge colorScheme='green'>Load CSV file</Badge> / <Badge colorScheme='green'>Create manually</Badge>
                 </Box>
-                <CSVEditor setLoading={setLoading} setResponse={setResponse} updateCsvData={updateCsvData}/>
+                <CSVEditor setLoading={setLoading} setResponse={setResponse} updateCsvData={updateCsvData} setCsv={setCsv}/>
             </Flex>
             <Box borderTop={'1px solid grey'} margin={'6px'}/>
             <Button variant={'outline'} colorScheme={'blue'} size={'sm'} margin={'10px'} onClick={addColumn}>+ Column</Button>

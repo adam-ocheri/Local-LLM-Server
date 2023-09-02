@@ -38,3 +38,15 @@ export async function postCsvTrainingData (csvData : string, setLoading : any, s
         setResponse(response.data.response)
     }
 }
+
+export async function initTraining (trainingData : any, setLoading : any, setResponse : any) {
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+    console.log('Starting training with finetune parameters.......', trainingData);
+    setLoading(true);
+    const response = await axios.post(baseAPI_URL + `api/train`, {trainingData}, {headers})
+    if (response.data) {
+        setResponse(response.data.response)
+    }
+}

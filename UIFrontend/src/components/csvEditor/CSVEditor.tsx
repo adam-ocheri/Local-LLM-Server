@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { parse, unparse } from 'papaparse'; // Import the CSV library
 import { postCsvTrainingData } from '@/utils/apiService';
 import BasicAccordion from '../basicAccordion/BasicAccordion';
 
 
 
-function CSVEditor({setLoading, setResponse, updateCsvData} : any) {
+function CSVEditor({setLoading, setResponse, updateCsvData, setCsv} : any) {
   const [csvContent, setCSVContent] = useState('');
+
+  // useEffect(()=>{
+  //   handleSaveChanges();
+  // },[csvContent])
 
   const handleFileUpload = (event : any) => {
     const file = event.target.files[0];
@@ -29,8 +33,11 @@ function CSVEditor({setLoading, setResponse, updateCsvData} : any) {
 
     // Convert the modified data back to CSV format
     const formattedCSV = unparse(parsedData);
-
-    await postCsvTrainingData(formattedCSV, setLoading, setResponse)
+    updateCsvData(csvContent);
+    setCsv(csvContent);
+    // setCSVContent(formattedCSV);
+    // updateCsvData(formattedCSV);
+    // await postCsvTrainingData(formattedCSV, setLoading, setResponse)
     // Now you can choose to download the CSV or save it to a server
     // For example, trigger a download link or make a POST request
   };

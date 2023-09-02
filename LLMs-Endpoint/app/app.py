@@ -113,12 +113,20 @@ async def process_csv():
     # training - - - - - - - - - - - - - -
     dataset = Dataset.from_pandas(df)
     pre_train = await app.active_model.pre_train(dataset=dataset)
-    train = await app.active_model.finetune_train()
+    # train = await app.active_model.finetune_train()
     # train = await active_model.train(dataset, output_dir="./LLMs-Endpoint/models")
     # if train == "training complete":
-    return jsonify({"response": "CSV data received and processed.\n" + train}), 200
+    return jsonify({"response": "CSV data received and processed.\n" + pre_train}), 200
 
     # TODO Return the data back - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+@app.route("/train", methods=["POST"])
+async def start_training():
+    # input_data = await request.get_json()
+    # prompt = input_data.get("prompt")
+    train = await app.active_model.finetune_train()
+    return jsonify({"response": "Training Completed!\n" + train}), 200
 
 
 if __name__ == "__main__":

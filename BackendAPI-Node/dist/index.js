@@ -2,6 +2,7 @@ import express from "express";
 import cors from 'cors';
 import promptRouter from "./routes/prompt/promptRoutes.js";
 import tuneRouter from "./routes/finetune/finetuneRoutes.js";
+import trainRouter from "./routes/train/trainRouter.js";
 import { config } from "dotenv";
 config();
 const server = express();
@@ -15,6 +16,7 @@ server.get("/", (req, res) => {
 // RESTful routes
 server.use("/api/prompt", promptRouter);
 server.use("/api/fine-tune", tuneRouter);
+server.use("/api/train", trainRouter);
 server.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
