@@ -9,23 +9,28 @@ import { initTraining, postCsvTrainingData } from '@/utils/apiService'
 
 
 export default function FineTuner({setLoading, setResponse} : any) {
+    const [trainingParameters, updateTrainingParameters] = useState({});
 
-    const [csv, setCsv] = useState('')
+    function getTrainingParams(trainingParams : any) {
+        updateTrainingParameters(trainingParams);
+    }
+
+    const [csvContent, setCSVContent] = useState('')
 
     async function preprocessCsv() {
 
-        await postCsvTrainingData(csv, setLoading, setResponse);
+        await postCsvTrainingData(csvContent, setLoading, setResponse);
     }
 
     async function startTraining() {
-        await initTraining({data: "..."}, setLoading, setResponse);
+        await initTraining({...trainingParameters}, setLoading, setResponse);
     }
 
     return (
         <BasicAccordion>
             <h3 style={{fontSize: '24pt', textAlign: 'center'}}>Fine Tune Menu</h3>
-            <CSVCreator setLoading={setLoading} setResponse={setResponse} setCsv={setCsv}/>
-            <FineTuneSettings/>
+            <CSVCreator csvContent={csvContent} setCSVContent={setCSVContent} />
+            <FineTuneSettings getTrainingParams={getTrainingParams}/>
             <Flex direction={'row'} justifyContent={'space-around'} margin={'25px'}> 
                 <Button variant={'outline'} colorScheme={'green'} onClick={preprocessCsv}>
                     Preprocess & Save 

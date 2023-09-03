@@ -8,24 +8,8 @@ from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
     BitsAndBytesConfig,
-    HfArgumentParser,
-    # Trainer,
-    TrainingArguments,
-    DataCollatorForLanguageModeling,
-    EarlyStoppingCallback,
-    pipeline,
-    logging,
-    set_seed,
 )
 
-from peft import (
-    LoraConfig,
-    get_peft_model,
-    prepare_model_for_kbit_training,
-    PeftModel,
-    AutoPeftModelForCausalLM,
-)
-from trl import SFTTrainer
 from finetune import init_finetuning, merge_weights
 
 # ! Definitions - Global Functions - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -254,7 +238,9 @@ class ModelHF:
 
         return "CSV preprocessed successfully"
 
-    async def finetune_train(self):
-        train = await init_finetuning(self.model, self.tokenizer, self.dataset)
-        response = await merge_weights(self.model, self.model_name)
+    async def finetune_train(self, training_data):
+        train = await init_finetuning(
+            self.model, self.tokenizer, self.dataset, training_data
+        )
+        response = await merge_weights(self.model, self.model_name, training_data)
         return response

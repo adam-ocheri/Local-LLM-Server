@@ -97,35 +97,26 @@ async def reload():
 @app.route("/fine-tune", methods=["POST"])
 async def process_csv():
     print("Got CSV Request! Processing...")
-
-    # csv_data = await request.get_data()
-    # csv_data_str = csv_data.decode("utf-8")
     csv_data = await request.get_json()
-    print("csv from json: ", csv_data)
     csv_data_str = csv_data.get("csvData")
-    print("csv data: ", csv_data_str)
+
     # Convert CSV data to Pandas DataFrame
-    # TODO Process the DataFrame as needed - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     df = pd.read_csv(io.StringIO(csv_data_str))
     df = df.fillna("")
     df.to_csv("./LLMs-Endpoint/app/train.csv", index=False)
 
-    # training - - - - - - - - - - - - - -
     dataset = Dataset.from_pandas(df)
     pre_train = await app.active_model.pre_train(dataset=dataset)
-    # train = await app.active_model.finetune_train()
-    # train = await active_model.train(dataset, output_dir="./LLMs-Endpoint/models")
-    # if train == "training complete":
     return jsonify({"response": "CSV data received and processed.\n" + pre_train}), 200
-
-    # TODO Return the data back - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
 @app.route("/train", methods=["POST"])
 async def start_training():
-    # input_data = await request.get_json()
-    # prompt = input_data.get("prompt")
-    train = await app.active_model.finetune_train()
+    input_data = await request.get_json()
+    training_data = input_data.get("trainingData")
+    print("Received training hyper-parameters", training_data)
+    model_training = app.active_model.finetune_train
+    train = await model_training(training_data)
     return jsonify({"response": "Training Completed!\n" + train}), 200
 
 

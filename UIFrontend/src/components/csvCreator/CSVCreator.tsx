@@ -1,31 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import CSVEditor from '../csvEditor/CSVEditor';
 import { Badge, Box, Button, Flex, Text } from '@chakra-ui/react';
+import { parse, unparse } from 'papaparse';
 
-function CSVCreator({ setLoading, setResponse, setCsv, inCsv  } : any) {
+function CSVCreator({ csvContent, setCSVContent, inCsv  } : any) {
+    // Init data - - - - - - - - - - - - - - - - - - - - - - - - 
     const [tableData, setTableData] = useState(
     [
-        ['Column 1', 'Column 2', 'Column 3', ''],
-        ['Row 1 example A', 'Row 1 example B', 'Row 1 example C', ''],
-        ['Row 2 example A', 'Row 2 example B', 'Row 2 example C', ''],
-        ['Row 3 example A', 'Row 3 example B', 'Row 3 example C', ''],
-        ['', '', '', ''],
-        ['', '', '', ''],
-        ['', '', '', ''],
-        ['', '', '', '']
-      ]
+            ['instruction', 'input', 'output', ],
+            ['Row 1 example A', 'Row 1 example B', 'Row 1 example C', ],
+            ['Row 2 example A', 'Row 2 example B', 'Row 2 example C', ],
+            ['Row 3 example A', 'Row 3 example B', 'Row 3 example C', ],
+            ['', '', '', ],
+            ['', '', '', ],
+            ['', '', '', ],
+            ['', '', '', ]
+        ]
     );
     const [csvData, updateCsvData] : any = useState(inCsv)
 
 
     useEffect(() => {
-        // Parse the CSV data when the csvData prop changes
         if (csvData) {
             const parsedData = parseCSV(csvData);
-            setCsv(formatCSV(parsedData));
+            setCSVContent(formatCSV(parsedData));
             setTableData(parsedData);
         }
     }, [csvData]);
+
+    useEffect(()=>{
+        const csvString = tableData.toString();
+        setCSVContent(formatCSV(tableData));
+    },[tableData])
+
+    // Function Definitions - - - - - - - - - - - - - - - - - - - - - - - - 
+
+    const handleFileUpload = (event : any) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = (e : ProgressEvent<FileReader>) => {
+        const content : string | ArrayBuffer | null | any = e?.target?.result;
+        setCSVContent(content);
+        updateCsvData(content);
+        };
+
+        reader.readAsText(file);
+    };
 
     const parseCSV = (csvText : any) => {
         // Split the CSV text into rows and columns
@@ -33,6 +54,13 @@ function CSVCreator({ setLoading, setResponse, setCsv, inCsv  } : any) {
         const data = rows.map((row : any) => row.split(','));
         return data;
     };
+
+    const formatCSV = (csv : any) => {
+        // Convert the table data into CSV format
+        const csvContent = csv.map((row : any) => row.join(',')).join('\n');
+        return csvContent;
+    };
+
 
     const addColumn = () => {
         // Add a new column to the table
@@ -55,19 +83,15 @@ function CSVCreator({ setLoading, setResponse, setCsv, inCsv  } : any) {
         setTableData(updatedData);
     };
 
-    const formatCSV = (csv : any) => {
-        // Convert the table data into CSV format
-        const csvContent = csv.map((row : any) => row.join(',')).join('\n');
-        return csvContent;
-    };
-
     return (
         <Box border={'1px solid grey'} borderRadius={'0px'} padding={'4px'}>
             <Flex flexDirection={'row'} justifyContent={'space-between'}>
                 <Box>
                     <Badge colorScheme='green'>Load CSV file</Badge> / <Badge colorScheme='green'>Create manually</Badge>
                 </Box>
-                <CSVEditor setLoading={setLoading} setResponse={setResponse} updateCsvData={updateCsvData} setCsv={setCsv}/>
+                <section style={{margin: '0px'}}>
+                    <input type="file" accept=".csv" onChange={handleFileUpload} style={{margin: '5px'}}/>
+                </section>
             </Flex>
             <Box borderTop={'1px solid grey'} margin={'6px'}/>
             <Button variant={'outline'} colorScheme={'blue'} size={'sm'} margin={'10px'} onClick={addColumn}>+ Column</Button>

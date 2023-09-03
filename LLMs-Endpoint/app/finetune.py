@@ -222,47 +222,47 @@ async def fine_tune(
     return "Training has completed!"
 
 
-async def init_finetuning(model, tokenizer, preprocessed_dataset):
+async def init_finetuning(model, tokenizer, preprocessed_dataset, training_data):
     ################################################################################
     # QLoRA parameters
     ################################################################################
 
     # LoRA attention dimension
-    lora_r = 16
+    lora_r = training_data.get("matricesUpdateRank")
 
     # Alpha parameter for LoRA scaling
-    lora_alpha = 64
+    lora_alpha = training_data.get("scalingFactor")
 
     # Dropout probability for LoRA layers
-    lora_dropout = 0.1
+    lora_dropout = training_data.get("dropoutProbability")
 
     # Bias
-    bias = "none"
+    bias = training_data.get("bias")
 
     # Task type
-    task_type = "CAUSAL_LM"
+    task_type = training_data.get("taskType")
 
     ################################################################################
     # TrainingArguments parameters
     ################################################################################
 
     # Batch size per GPU for training
-    per_device_train_batch_size = 1
+    per_device_train_batch_size = training_data.get("perDeviceTrainBatchSize")
 
     # Number of update steps to accumulate the gradients for
-    gradient_accumulation_steps = 4
+    gradient_accumulation_steps = training_data.get("gradientAccumulationSteps")
 
     # Initial learning rate (AdamW optimizer)
-    learning_rate = 2e-4
+    learning_rate = training_data.get("learningRate")
 
     # Optimizer to use
     optim = "paged_adamw_32bit"
 
     # Number of training steps (overrides num_train_epochs)
-    max_steps = 20
+    max_steps = training_data.get("maxSteps")
 
     # Linear warmup steps from 0 to learning_rate
-    warmup_steps = 2
+    warmup_steps = training_data.get("warmupSteps")
 
     # Enable fp16/bf16 training (set bf16 to True with an A100)
     fp16 = True
@@ -293,7 +293,7 @@ async def init_finetuning(model, tokenizer, preprocessed_dataset):
     return result
 
 
-async def merge_weights(model, model_name):
+async def merge_weights(model, model_name, training_data):
     # Load fine-tuned weights
     model = AutoPeftModelForCausalLM.from_pretrained(
         output_dir, device_map="auto", torch_dtype=torch.bfloat16
@@ -310,3 +310,9 @@ async def merge_weights(model, model_name):
     # Save tokenizer for easy inference
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.save_pretrained(merge_dir)
+
+    # upload to hub
+    push_to_hub = training_data.get("pushToHub")
+    if push_to_hub:
+        hf_username = training_data.get("hfUsername")
+        new_model_dir = training_data.get("newModelDir")
