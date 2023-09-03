@@ -2,6 +2,7 @@
 LLMs-Endpoint/.env
 LLMs-Endpoint/.vscode
 LLMs-Endpoint/models
+LLMs-Endpoint/finetune-results
 LLMs-Endpoint/app/XVolatile.egg-info
 BackendAPI-Node/.vscode
 BackendAPI-Node/node_modules
