@@ -7,15 +7,12 @@ import torch
 from datasets import Dataset
 from model_hf import ModelHF
 import asyncio
-
 from dotenv import load_dotenv
 
-load_dotenv()
 # import os
-
+load_dotenv()
 # cuda_version = os.getenv("BNB_CUDA_VERSION")
 # ld_lib_path = os.getenv("LD_LIBRARY_PATH")
-
 # print("Database URL:", cuda_version)
 # print("API Key:", ld_lib_path)
 

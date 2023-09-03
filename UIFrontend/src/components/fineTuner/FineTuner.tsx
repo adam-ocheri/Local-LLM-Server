@@ -27,10 +27,13 @@ export default function FineTuner({setLoading, setResponse} : any) {
     }
 
     return (
-        <BasicAccordion>
-            <h3 style={{fontSize: '24pt', textAlign: 'center'}}>Fine Tune Menu</h3>
+        <BasicAccordion title={'FineTune Menu'}>
+            {/* <h3 style={{fontSize: '12pt', textAlign: 'center'}}>Dataset Setup</h3> */}
+            
+            <BasicAccordion title={'Training Parameters'}>
+                <FineTuneSettings getTrainingParams={getTrainingParams}/>
+            </BasicAccordion>
             <CSVCreator csvContent={csvContent} setCSVContent={setCSVContent} />
-            <FineTuneSettings getTrainingParams={getTrainingParams}/>
             <Flex direction={'row'} justifyContent={'space-around'} margin={'25px'}> 
                 <Button variant={'outline'} colorScheme={'green'} onClick={preprocessCsv}>
                     Preprocess & Save 

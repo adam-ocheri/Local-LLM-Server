@@ -86,12 +86,12 @@ function CSVCreator({ csvContent, setCSVContent, inCsv  } : any) {
     return (
         <Box border={'1px solid grey'} borderRadius={'0px'} padding={'4px'}>
             <Flex flexDirection={'row'} justifyContent={'space-between'}>
-                <Box>
-                    <Badge colorScheme='green'>Load CSV file</Badge> / <Badge colorScheme='green'>Create manually</Badge>
-                </Box>
                 <section style={{margin: '0px'}}>
                     <input type="file" accept=".csv" onChange={handleFileUpload} style={{margin: '5px'}}/>
                 </section>
+                <Box>
+                    <Badge colorScheme='green'>Load CSV file</Badge> / <Badge colorScheme='green'>Create manually</Badge>
+                </Box>
             </Flex>
             <Box borderTop={'1px solid grey'} margin={'6px'}/>
             <Button variant={'outline'} colorScheme={'blue'} size={'sm'} margin={'10px'} onClick={addColumn}>+ Column</Button>
