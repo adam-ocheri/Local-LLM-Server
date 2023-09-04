@@ -41,8 +41,13 @@ def create_bnb_config():  # load_in_4bit, bnb_4bit_use_double_quant, bnb_4bit_qu
     # Compute data type for 4-bit base models
     bnb_4bit_compute_dtype = torch.bfloat16
 
-    bnb_config = BitsAndBytesConfig(
-        load_in_8bit=True, llm_int8_skip_modules=["lm_head"]
+    bnb_config = (
+        BitsAndBytesConfig(  # load_in_8bit=True, llm_int8_skip_modules=["lm_head"]
+            load_in_4bit=load_in_4bit,
+            bnb_4bit_use_double_quant=bnb_4bit_use_double_quant,
+            bnb_4bit_quant_type=bnb_4bit_quant_type,
+            bnb_4bit_compute_dtype=bnb_4bit_compute_dtype,
+        )
     )
 
     return bnb_config
@@ -158,10 +163,12 @@ class ModelHF:
         dataset_name = "./LLMs-Endpoint/app/train.csv"
 
         # Load dataset
-        self.dataset = load_dataset("csv", data_files=dataset_name)
+        self.dataset = load_dataset("csv", data_files=dataset_name, split="train")
 
         print(f"Number of prompts: {len(self.dataset)}")
         print(f"Column names are: {self.dataset.column_names}")
+
+        return self.dataset
 
     def get_max_length(self):
         """
@@ -228,13 +235,15 @@ class ModelHF:
             "About to preprocess dataset. This may take a while... (the dataset's size contributes to the load time of course)"
         )
         print(dataset)
+
         preprocessed_dataset = self.preprocess_dataset(
             self.tokenizer, max_length, seed, dataset
         )
-        self.dataset = preprocessed_dataset
+        # dataset = self.process_dataset()
+        self.dataset = preprocessed_dataset  # TODO ["train"][0]
         print("Dataset preprocessed successfully")
-        print(preprocessed_dataset)
-        print(preprocessed_dataset[0])
+        # print(preprocessed_dataset)
+        # print(preprocessed_dataset[0])
 
         return "CSV preprocessed successfully"
 

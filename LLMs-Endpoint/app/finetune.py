@@ -30,6 +30,7 @@ from trl import SFTTrainer
 
 # Output directory where the model predictions and checkpoints will be stored
 output_dir = "./LLMs-Endpoint/finetune-results"
+merge_dir = "./LLMs-Endpoint/trained-model"
 
 
 class DataFormatter:
@@ -38,14 +39,15 @@ class DataFormatter:
 
     def format_data_for_sft(self, example):
         # Tokenize the input text and target text
+        print("example is:", example)
         inputs = self.tokenizer(
-            example["input_text"],
+            example["input_ids"],
             padding="max_length",
             truncation=True,
             return_tensors="pt",
         )
         labels = self.tokenizer(
-            example["target_text"],
+            example["input_ids"],
             padding="max_length",
             truncation=True,
             return_tensors="pt",
@@ -91,7 +93,7 @@ def find_all_linear_names(model):
     :param model: PEFT model
     """
 
-    cls = bnb.nn.Linear8bitLt
+    cls = bnb.nn.Linear4bit
     lora_module_names = set()
     for name, module in model.named_modules():
         if isinstance(module, cls):
@@ -178,7 +180,7 @@ async def fine_tune(
     # Training parameters
     trainer = Trainer(
         model=model,
-        train_dataset=dataset,
+        train_dataset=dataset["input_ids"],
         # packing=True,
         # formatting_func=formatter_func,
         args=TrainingArguments(
@@ -295,19 +297,24 @@ async def init_finetuning(model, tokenizer, preprocessed_dataset, training_data)
 
 async def merge_weights(model, model_name, training_data):
     # Load fine-tuned weights
+    print("\nLoading fine-tuned weights...")
     model = AutoPeftModelForCausalLM.from_pretrained(
-        output_dir, device_map="auto", torch_dtype=torch.bfloat16
+        output_dir,
+        torch_dtype=torch.bfloat16,  # add `device_map="auto"` if facing OOM issues
     )
     # Merge the LoRA layers with the base model
+    print("\nMerging the LoRA layers with the base model")
     model = model.merge_and_unload()
 
     # Save fine-tuned model at a new location
-    merge_dir_suffix = "/final-merged-model"
-    merge_dir = output_dir + merge_dir_suffix
+    print("\nSaving fine-tuned model at a new location")
+    # merge_dir_suffix = "/final-merged-model"
+    # merge_dir = output_dir + merge_dir_suffix
     os.makedirs(merge_dir, exist_ok=True)
     model.save_pretrained(merge_dir, safe_serialization=True)
 
     # Save tokenizer for easy inference
+    print("\nSaving tokenizer for easy inference")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.save_pretrained(merge_dir)
 
@@ -316,3 +323,19 @@ async def merge_weights(model, model_name, training_data):
     if push_to_hub:
         hf_username = training_data.get("hfUsername")
         new_model_dir = training_data.get("newModelDir")
+
+    return "Merging Weights completed"
+
+
+# TODO - wtf ?
+# C:\Users\adamo\AppData\Local\Programs\Python\Python311\Lib\site-packages\transformers\generation\utils.py:1270:
+# UserWarning: You have modified the pretrained model configuration to control generation.
+# This is a deprecated strategy to control generation and will be removed soon, in a future version.
+# Please use a generation configuration file (see https://huggingface.co/docs/transformers/main_classes/text_generation )
+#   warnings.warn(
+# C:\Users\adamo\AppData\Local\Programs\Python\Python311\Lib\site-packages\transformers\generation\utils.py:1468: UserWarning: You are calling .generate() with the `input_ids` being on a device type different than your model's device. `input_ids` is on cpu, whereas the model is on cuda. You may experience unexpected behaviors or slower generation. Please make sure that you have put `input_ids` to the correct device by calling for example input_ids = input_ids.to('cuda') before running `.generate()`.
+#   warnings.warn(
+# C:\Users\adamo\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\utils\checkpoint.py:31: UserWarning:
+# None of the inputs have requires_grad=True. Gradients will be None
+#   warnings.warn("None of the inputs have requires_grad=True. Gradients will be None")
+# [2023-09-04 13:28:08 +0300] [10896] [INFO] 127.0.0.1:58891 POST /gen 1.1 200 177 10789675

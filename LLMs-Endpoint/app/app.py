@@ -4,13 +4,14 @@ from quart_cors import cors
 import pandas as pd
 import io
 import torch
-from datasets import Dataset
+from datasets import Dataset, load_dataset
 from model_hf import ModelHF
 import asyncio
-from dotenv import load_dotenv
+
+# from dotenv import load_dotenv
 
 # import os
-load_dotenv()
+# load_dotenv()
 # cuda_version = os.getenv("BNB_CUDA_VERSION")
 # ld_lib_path = os.getenv("LD_LIBRARY_PATH")
 # print("Database URL:", cuda_version)
@@ -103,6 +104,7 @@ async def process_csv():
     df.to_csv("./LLMs-Endpoint/app/train.csv", index=False)
 
     dataset = Dataset.from_pandas(df)
+
     pre_train = await app.active_model.pre_train(dataset=dataset)
     return jsonify({"response": "CSV data received and processed.\n" + pre_train}), 200
 

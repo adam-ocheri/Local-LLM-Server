@@ -10,7 +10,7 @@ export default function FineTuneSettings( {getTrainingParams} : any) {
         gradientAccumulationSteps: 4,
         warmupSteps: 0,
         bias: 'none',
-        taskType: 'CASUAL_LM',
+        taskType: 'CAUSAL_LM',
         learningRate: 0.00005,
         dropoutProbability: 0.1,
         pushToHub: false,
