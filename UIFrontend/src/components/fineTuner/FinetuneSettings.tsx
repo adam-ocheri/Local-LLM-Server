@@ -37,12 +37,18 @@ export default function FineTuneSettings({ getTrainingParams }: any) {
     const updateTrainingParams = (e: any, name: string) => {
         console.log("Updating training params...", e)
 
-        if (e?.target) {
+        if (e?.target && e.type == 'change') {
+            setTrainingParams(prev => ({
+                ...prev,
+                [e.target.name]: e.target.checked
+            }))
+        } else if (e?.target ) {
             setTrainingParams(prev => ({
                 ...prev,
                 [e.target.name]: e.target.value
             }))
-        } else {
+        } 
+        else {
             setTrainingParams(prev => ({
                 ...prev,
                 [name]: e
@@ -83,11 +89,11 @@ export default function FineTuneSettings({ getTrainingParams }: any) {
                     <FormLabel htmlFor='email-alerts' mb='0'>
                         Upload to hub?
                     </FormLabel>
-                    <Switch name='pushToHub' value={Number(pushToHub)} onChange={(e) => updateTrainingParams(e, "pushToHub")} id='email-alerts' />
+                    <Switch name='pushToHub' value={pushToHub} onChange={(e) => updateTrainingParams(e, "pushToHub")} id='email-alerts' />
                     <Flex>
-                        <Input disabled={pushToHub == false} name='hfUsername' value={hfUsername} onChange={(e) => updateTrainingParams(e, "hfUsername")} placeholder='HuggingFace Username' />
+                        <Input disabled={!pushToHub} name='hfUsername' value={hfUsername} onChange={(e) => updateTrainingParams(e, "hfUsername")} placeholder='HuggingFace Username' />
                         <Text color={'grey'} fontSize={'24pt'}>/</Text>
-                        <Input disabled={pushToHub == false} name='newModelDir' value={newModelDir} onChange={(e) => updateTrainingParams(e, "newModelDir")} placeholder='Model Name or Path on HF' />
+                        <Input disabled={!pushToHub} name='newModelDir' value={newModelDir} onChange={(e) => updateTrainingParams(e, "newModelDir")} placeholder='Model Name or Path on HF' />
                     </Flex>
                 </Flex>
             </FormControl>
