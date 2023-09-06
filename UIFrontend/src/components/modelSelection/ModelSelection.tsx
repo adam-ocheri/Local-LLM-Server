@@ -135,10 +135,7 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
                         onChange={(e) => {setPrompt(e.target.value)}}
                     />
                     <button 
-                        type="submit" style={{background: `${modelNeedsReloading ? '#2c324a' : '#01a210'}`, 
-                        color: 'white', padding: '1%', margin: '0 auto', width: '25%', border: '2px solid black', 
-                        borderRadius: '12px'
-                    }}
+                        type="submit" className="btn-base" style={{margin: "0 auto"}}
                     > {modelNeedsReloading ? 'RELOAD' : 'Submit'}
                     </button>
                     {/* <CSVEditor setLoading={setLoading} setResponse={setResponse}/> */}

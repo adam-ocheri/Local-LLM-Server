@@ -84,20 +84,23 @@ function CSVCreator({ csvContent, setCSVContent, inCsv  } : any) {
     };
 
     return (
-        <Box border={'1px solid grey'} borderRadius={'0px'} padding={'4px'}>
-            <Flex flexDirection={'row'} justifyContent={'space-between'}>
-                <section style={{margin: '0px'}}>
-                    <input type="file" accept=".csv" onChange={handleFileUpload} style={{margin: '5px'}}/>
+        <Box border={'1px solid #333344'} borderRadius={'0px'} padding={'4px'} borderTopRadius={'4px'}>
+            <Flex flexDirection={'row'} justifyContent={'space-between'} background={'#333344'} padding={'12px'} borderRadius={'6px'}>
+                <section style={{margin: '10px'}}>
+                    <label htmlFor="file-input" className="custom-file-upload">
+                        Upload Dataset
+                    </label>
+                    <input id="file-input" type="file" accept=".csv" onChange={handleFileUpload} style={{display: "none"}} />
                 </section>
                 <Box>
                     <Badge colorScheme='green'>Load CSV file</Badge> / <Badge colorScheme='green'>Create manually</Badge>
                 </Box>
             </Flex>
-            <Box borderTop={'1px solid grey'} margin={'6px'}/>
+            {/* <Box borderTop={'1px solid #333344'} margin={'6px'}/> */}
             <Button variant={'outline'} colorScheme={'blue'} size={'sm'} margin={'10px'} onClick={addColumn}>+ Column</Button>
             <Button variant={'outline'} colorScheme={'blue'} size={'sm'} margin={'10px'} onClick={addRow}>+ Row</Button>
             {/* <Button variant={'outline'} colorScheme={'blue'} onClick={exportCSV}>Export CSV</Button> */}
-            <div style={{overflowX: 'auto'}}>
+            <div style={{overflowX: 'auto', color: 'black'}}>
                 
                 <table>
                     <tbody>

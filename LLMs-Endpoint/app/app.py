@@ -11,11 +11,16 @@ import asyncio
 # from dotenv import load_dotenv
 
 # import os
+
 # load_dotenv()
-# cuda_version = os.getenv("BNB_CUDA_VERSION")
-# ld_lib_path = os.getenv("LD_LIBRARY_PATH")
-# print("Database URL:", cuda_version)
-# print("API Key:", ld_lib_path)
+
+# dev_mode = os.getenv("DEV_MODE")
+# print("*********Dev Mode is:******** - ", dev_mode, " - ***************")
+
+# lazy_mode = dev_mode == "lazy-dever"
+# full_path = "./LLMs-Endpoint/models/"
+# lazy_path = "./models/"
+# cache_dir_path = lazy_path if lazy_mode else full_path
 
 torch.cuda.empty_cache()
 
@@ -30,9 +35,7 @@ active_model_name = "meta-llama/Llama-2-7b-hf"
 
 # Define an asynchronous function to create the active_model
 async def init_model():
-    return await ModelHF.create(
-        active_model_name, "./LLMs-Endpoint/models/" + active_model_name
-    )
+    return await ModelHF.create(active_model_name, cache_dir_path + active_model_name)
 
 
 # Define a lambda that calls the asynchronous function
@@ -45,7 +48,7 @@ app.active_model: ModelHF = set_active_model()
 async def on_model_set(name=""):
     active_model_name = name
     app.active_model = await ModelHF.create(
-        active_model_name, "./LLMs-Endpoint/models/" + active_model_name
+        active_model_name, cache_dir_path + active_model_name
     )
     return jsonify({"ModelUpdated": active_model_name}), 200
 

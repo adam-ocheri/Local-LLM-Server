@@ -1,7 +1,7 @@
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Flex, FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Radio, RadioGroup, Select, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Stack, Switch, Text } from '@chakra-ui/react'
 
-export default function FineTuneSettings( {getTrainingParams} : any) {
+export default function FineTuneSettings({ getTrainingParams }: any) {
     const [trainingParams, setTrainingParams] = useState({
         maxSteps: 16,
         matricesUpdateRank: 16,
@@ -19,33 +19,33 @@ export default function FineTuneSettings( {getTrainingParams} : any) {
     })
 
     const {
-        warmupSteps, 
-        maxSteps, 
-        gradientAccumulationSteps, 
-        matricesUpdateRank, 
-        scalingFactor, 
-        perDeviceTrainBatchSize, 
-        learningRate, 
-        dropoutProbability, 
-        pushToHub, 
+        warmupSteps,
+        maxSteps,
+        gradientAccumulationSteps,
+        matricesUpdateRank,
+        scalingFactor,
+        perDeviceTrainBatchSize,
+        learningRate,
+        dropoutProbability,
+        pushToHub,
         hfUsername,
         newModelDir,
         bias,
         taskType
     } = trainingParams;
 
-    const updateTrainingParams = (e : any, name : string) => {
+    const updateTrainingParams = (e: any, name: string) => {
         console.log("Updating training params...", e)
 
-        if(e?.target) {
+        if (e?.target) {
             setTrainingParams(prev => ({
                 ...prev,
-                [e.target.name] : e.target.value
+                [e.target.name]: e.target.value
             }))
         } else {
             setTrainingParams(prev => ({
                 ...prev,
-                [name] : e
+                [name]: e
             }))
         }
     }
@@ -58,7 +58,7 @@ export default function FineTuneSettings( {getTrainingParams} : any) {
         <Box margin={'120px'}>
             <Box margin={'25px'}>
                 <Text>Task Type</Text>
-                <Select name='taskType' value={taskType} onChange={(e) => updateTrainingParams(e, "taskType")}>
+                <Select name='taskType' value={taskType} onChange={(e) => updateTrainingParams(e, "taskType")} backgroundColor={'#eeeeee'} color={'#00aaff'}>
                     <option value="CAUSAL_LM">CAUSAL_LM</option>
                     <option value="TOKEN_CLS">TOKEN_CLS</option>
                     <option value="SEQ_2_SEQ_LM">SEQ_2_SEQ_LM</option>
@@ -70,11 +70,11 @@ export default function FineTuneSettings( {getTrainingParams} : any) {
             <Box margin={'25px'}>
                 <Text>Bias</Text>
                 <RadioGroup onChange={(e) => updateTrainingParams(e, "bias")} value={bias} name='bias'>
-                <Stack direction='row'>
-                    <Radio value='none'>None</Radio>
-                    <Radio value='all'>All</Radio>
-                    <Radio value='lora_only'>Bias Only</Radio>
-                </Stack>
+                    <Stack direction='row'>
+                        <Radio value='none'>None</Radio>
+                        <Radio value='all'>All</Radio>
+                        <Radio value='lora_only'>Bias Only</Radio>
+                    </Stack>
                 </RadioGroup>
             </Box>
 
@@ -85,9 +85,9 @@ export default function FineTuneSettings( {getTrainingParams} : any) {
                     </FormLabel>
                     <Switch name='pushToHub' value={Number(pushToHub)} onChange={(e) => updateTrainingParams(e, "pushToHub")} id='email-alerts' />
                     <Flex>
-                        <Input disabled={pushToHub == false} name='hfUsername' value={hfUsername} onChange={(e) => updateTrainingParams(e, "hfUsername")} placeholder='HuggingFace Username'/>
+                        <Input disabled={pushToHub == false} name='hfUsername' value={hfUsername} onChange={(e) => updateTrainingParams(e, "hfUsername")} placeholder='HuggingFace Username' />
                         <Text color={'grey'} fontSize={'24pt'}>/</Text>
-                        <Input disabled={pushToHub == false} name='newModelDir' value={newModelDir} onChange={(e) => updateTrainingParams(e, "newModelDir")} placeholder='Model Name or Path on HF'/>
+                        <Input disabled={pushToHub == false} name='newModelDir' value={newModelDir} onChange={(e) => updateTrainingParams(e, "newModelDir")} placeholder='Model Name or Path on HF' />
                     </Flex>
                 </Flex>
             </FormControl>
@@ -97,43 +97,44 @@ export default function FineTuneSettings( {getTrainingParams} : any) {
                     <Box>
                         <Text>Update-Matrices Rank</Text>
                         <NumberInput value={matricesUpdateRank} precision={2} step={8} min={8} max={64} name='matricesUpdateRank' onChange={(e) => updateTrainingParams(e, "matricesUpdateRank")}>
-                            <NumberInputField />
-                            <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
+                            <NumberInputField background={'white'} color={'#00aaff'} />
+                            <NumberInputStepper >
+                                <NumberIncrementStepper background={'#00aaff'} />
+                                <NumberDecrementStepper background={'#00aaff'} />
                             </NumberInputStepper>
                         </NumberInput>
                     </Box>
                     <Box>
                         <Text>Scaling Factor</Text>
                         <NumberInput value={scalingFactor} precision={2} step={8} min={8} max={64} name='scalingFactor' onChange={(e) => updateTrainingParams(e, "scalingFactor")}>
-                            <NumberInputField />
+                            <NumberInputField background={'white'} color={'#00aaff'} />
                             <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
+                                <NumberIncrementStepper background={'#00aaff'} />
+                                <NumberDecrementStepper background={'#00aaff'} />
                             </NumberInputStepper>
                         </NumberInput>
                     </Box>
                     <Box>
                         <Text>Per Device Training Batch Size</Text>
                         <NumberInput value={perDeviceTrainBatchSize} step={1} min={1} max={64} name='perDeviceTrainBatchSize' onChange={(e) => updateTrainingParams(e, "perDeviceTrainBatchSize")}>
-                            <NumberInputField />
+                            <NumberInputField background={'white'} color={'#00aaff'} />
                             <NumberInputStepper>
-                                <NumberIncrementStepper />
-                                <NumberDecrementStepper />
+                                <NumberIncrementStepper background={'#00aaff'} />
+                                <NumberDecrementStepper background={'#00aaff'} />
                             </NumberInputStepper>
                         </NumberInput>
                     </Box>
                 </Flex>
 
                 <Flex direction={'column'}>
-                    <Box margin={'25px'}>    
-                        <Text>Dropout Probability </Text> <Text color={'blue.700'}>{dropoutProbability}</Text>
-                        <Slider aria-label='slider-ex-2' colorScheme='pink' value={dropoutProbability} min={0.0} max={1.0} step={0.01} name='dropoutProbability' onChange={(e) => updateTrainingParams(e, "dropoutProbability")}>
+                    <Box margin={'25px'} padding={'5px'} background={'#33334444'} borderRadius={'8px'}>
+                        <Text background={'#333344'} padding={'4px'} borderRadius={'3px'}>Dropout Probability </Text>
+                        <Text color={'#0a3bcc'}>{dropoutProbability}</Text>
+                        <Slider aria-label='slider-ex-2' value={dropoutProbability} min={0.0} max={1.0} step={0.01} name='dropoutProbability' onChange={(e) => updateTrainingParams(e, "dropoutProbability")}>
                             <SliderTrack>
                                 <SliderFilledTrack />
                             </SliderTrack>
-                        <SliderThumb />
+                            <SliderThumb />
                         </Slider>
                     </Box>
                     <Box margin={'25px'}>
@@ -142,7 +143,7 @@ export default function FineTuneSettings( {getTrainingParams} : any) {
                             <SliderTrack>
                                 <SliderFilledTrack />
                             </SliderTrack>
-                        <SliderThumb />
+                            <SliderThumb />
                         </Slider>
                     </Box>
                     <Box margin={'25px'}>
@@ -151,7 +152,7 @@ export default function FineTuneSettings( {getTrainingParams} : any) {
                             <SliderTrack>
                                 <SliderFilledTrack />
                             </SliderTrack>
-                        <SliderThumb />
+                            <SliderThumb />
                         </Slider>
                     </Box>
 
@@ -161,7 +162,7 @@ export default function FineTuneSettings( {getTrainingParams} : any) {
                             <SliderTrack>
                                 <SliderFilledTrack />
                             </SliderTrack>
-                        <SliderThumb />
+                            <SliderThumb />
                         </Slider>
                     </Box>
                     <Box margin={'25px'}>
@@ -170,7 +171,7 @@ export default function FineTuneSettings( {getTrainingParams} : any) {
                             <SliderTrack>
                                 <SliderFilledTrack />
                             </SliderTrack>
-                        <SliderThumb />
+                            <SliderThumb />
                         </Slider>
                     </Box>
                 </Flex>

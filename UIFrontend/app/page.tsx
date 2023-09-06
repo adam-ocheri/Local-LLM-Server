@@ -12,7 +12,7 @@ export default function Home() {
   },[])
   return (
     <main style={{}}>
-      <h1 style={{textAlign:'center', fontSize: '32pt', margin: '30px'}}>HuggingFace Local-Runtime AI Containers</h1>
+      <h1 style={{textAlign:'center', fontSize: '46pt', margin: '50px', color: 'white'}}>AI LLM Local Server</h1>
       <div style={{minWidth: '80vw', minHeight: '80vh'}}>
         <ModelSelection providers={providersList}/>
       </div>
