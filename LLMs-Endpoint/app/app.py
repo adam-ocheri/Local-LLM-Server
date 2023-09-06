@@ -7,20 +7,18 @@ import torch
 from datasets import Dataset, load_dataset
 from model_hf import ModelHF
 import asyncio
+from dotenv import load_dotenv
+import os
 
-# from dotenv import load_dotenv
+#! PRE - INIT - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# import os
+load_dotenv()
 
-# load_dotenv()
-
-# dev_mode = os.getenv("DEV_MODE")
-# print("*********Dev Mode is:******** - ", dev_mode, " - ***************")
-
-# lazy_mode = dev_mode == "lazy-dever"
-# full_path = "./LLMs-Endpoint/models/"
-# lazy_path = "./models/"
-# cache_dir_path = lazy_path if lazy_mode else full_path
+dev_mode = os.getenv("DEV_MODE")
+lazy_mode = dev_mode == "lazy-dev"
+full_path = "./LLMs-Endpoint/models/"
+lazy_path = "./models/"
+cache_dir_path = lazy_path if lazy_mode else full_path
 
 torch.cuda.empty_cache()
 
@@ -33,16 +31,16 @@ print("ML Server starting...")
 active_model_name = "meta-llama/Llama-2-7b-hf"
 
 
-# Define an asynchronous function to create the active_model
-async def init_model():
-    return await ModelHF.create(active_model_name, cache_dir_path + active_model_name)
+# # Define an asynchronous function to create the active_model
+# async def init_model():
+#     return await ModelHF.create(active_model_name, cache_dir_path + active_model_name)
 
 
-# Define a lambda that calls the asynchronous function
-set_active_model = lambda: asyncio.run(init_model())
+# # Define a lambda that calls the asynchronous function
+# set_active_model = lambda: asyncio.run(init_model())
 
-# Uncomment this line to immediately load model once the app runs:
-app.active_model: ModelHF = set_active_model()
+# # Uncomment this line to immediately load model once the app runs:
+# app.active_model: ModelHF = set_active_model()
 
 
 async def on_model_set(name=""):
@@ -95,6 +93,15 @@ async def reload():
     return response
 
 
+@app.route("/fine-tune", methods=["GET"])
+async def verify_dataset():
+    print("Verifying dataset before training begins...")
+    dataset_valid = False
+    if app.active_model.dataset != None:
+        dataset_valid = True
+    return jsonify({"datasetValid": dataset_valid}), 200
+
+
 @app.route("/fine-tune", methods=["POST"])
 async def process_csv():
     print("Got CSV Request! Processing...")
@@ -109,7 +116,7 @@ async def process_csv():
     dataset = Dataset.from_pandas(df)
 
     pre_train = await app.active_model.pre_train(dataset=dataset)
-    return jsonify({"response": "CSV data received and processed.\n" + pre_train}), 200
+    return jsonify({"response": pre_train}), 200
 
 
 @app.route("/train", methods=["POST"])

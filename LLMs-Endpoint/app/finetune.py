@@ -1,13 +1,8 @@
 import os
-from random import randrange
-from functools import partial
 import torch
 from datasets import load_dataset
 from transformers import (
-    AutoModelForCausalLM,
     AutoTokenizer,
-    BitsAndBytesConfig,
-    HfArgumentParser,
     Trainer,
     TrainingArguments,
     DataCollatorForLanguageModeling,
@@ -87,11 +82,7 @@ def create_peft_config(r, lora_alpha, lora_dropout, bias, task_type):
 
 
 def find_all_linear_names(model):
-    """
-    Find modules to apply LoRA to.
-
-    :param model: PEFT model
-    """
+    # Find modules to apply LoRA to.
 
     cls = bnb.nn.Linear4bit
     lora_module_names = set()
@@ -107,11 +98,7 @@ def find_all_linear_names(model):
 
 
 def print_trainable_parameters(model, use_4bit=False):
-    """
-    Prints the number of trainable parameters in the model.
-
-    :param model: PEFT model
-    """
+    # Prints the number of trainable parameters in the model.
 
     trainable_params = 0
     all_param = 0
@@ -151,14 +138,6 @@ async def fine_tune(
     output_dir,
     optim,
 ):
-    """
-    Prepares and fine-tune the pre-trained model.
-
-    :param model: Pre-trained Hugging Face model
-    :param tokenizer: Model tokenizer
-    :param dataset: Preprocessed training dataset
-    """
-
     # Enable gradient checkpointing to reduce memory usage during fine-tuning
     model.gradient_checkpointing_enable()
 
@@ -172,8 +151,6 @@ async def fine_tune(
     peft_config = create_peft_config(lora_r, lora_alpha, lora_dropout, bias, task_type)
     model = get_peft_model(model, peft_config)
 
-    data_formatter = DataFormatter(tokenizer=tokenizer)
-    formatter_func = data_formatter.format_data_for_sft
     # Print information about the percentage of trainable parameters
     print_trainable_parameters(model)
 
@@ -302,14 +279,13 @@ async def merge_weights(model, model_name, training_data):
         output_dir,
         torch_dtype=torch.bfloat16,  # add `device_map="auto"` if facing OOM issues
     )
+
     # Merge the LoRA layers with the base model
     print("\nMerging the LoRA layers with the base model")
     model = model.merge_and_unload()
 
     # Save fine-tuned model at a new location
     print("\nSaving fine-tuned model at a new location")
-    # merge_dir_suffix = "/final-merged-model"
-    # merge_dir = output_dir + merge_dir_suffix
     os.makedirs(merge_dir, exist_ok=True)
     model.save_pretrained(merge_dir, safe_serialization=True)
 
@@ -325,17 +301,3 @@ async def merge_weights(model, model_name, training_data):
         new_model_dir = training_data.get("newModelDir")
 
     return "Merging Weights completed"
-
-
-# TODO - wtf ?
-# C:\Users\adamo\AppData\Local\Programs\Python\Python311\Lib\site-packages\transformers\generation\utils.py:1270:
-# UserWarning: You have modified the pretrained model configuration to control generation.
-# This is a deprecated strategy to control generation and will be removed soon, in a future version.
-# Please use a generation configuration file (see https://huggingface.co/docs/transformers/main_classes/text_generation )
-#   warnings.warn(
-# C:\Users\adamo\AppData\Local\Programs\Python\Python311\Lib\site-packages\transformers\generation\utils.py:1468: UserWarning: You are calling .generate() with the `input_ids` being on a device type different than your model's device. `input_ids` is on cpu, whereas the model is on cuda. You may experience unexpected behaviors or slower generation. Please make sure that you have put `input_ids` to the correct device by calling for example input_ids = input_ids.to('cuda') before running `.generate()`.
-#   warnings.warn(
-# C:\Users\adamo\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\utils\checkpoint.py:31: UserWarning:
-# None of the inputs have requires_grad=True. Gradients will be None
-#   warnings.warn("None of the inputs have requires_grad=True. Gradients will be None")
-# [2023-09-04 13:28:08 +0300] [10896] [INFO] 127.0.0.1:58891 POST /gen 1.1 200 177 10789675

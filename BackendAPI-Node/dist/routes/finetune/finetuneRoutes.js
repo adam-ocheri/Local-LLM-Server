@@ -1,5 +1,7 @@
 import express from "express";
-import { triggerTrainingFromCSV } from "../../controllers/finetune/finetuneController.js";
+import { preprocessCsv, verifyDataset } from "../../controllers/finetune/finetuneController.js";
 const tuneRouter = express.Router();
-tuneRouter.route("/").post(triggerTrainingFromCSV);
+tuneRouter.route("/")
+    .get(verifyDataset)
+    .post(preprocessCsv);
 export default tuneRouter;

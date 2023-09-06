@@ -4,8 +4,10 @@ import { postPrompt, requestModelChange } from "@/utils/apiService";
 import { IHFModel } from "@/utils/hfModel";
 import { ChangeEvent, useEffect, useState } from "react"
 import CSVEditor from "../csvEditor/CSVEditor";
-import { Spinner } from "@chakra-ui/react";
+import { Flex, Spinner } from "@chakra-ui/react";
 import FineTuner from "../fineTuner/FineTuner";
+import StatusAlert from "../statusAlert/StatusAlert";
+import ModelStatus from "../llmStatus/ModelStatus";
 
 
 export default function ModelSelection({providers} : {providers : IHFModel[]}) {
@@ -21,7 +23,9 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
     const [modelNeedsReloading, setModelNeedsReloading] = useState(false);
     const [prompt, setPrompt] = useState('');
     const [response, setResponse] = useState('');
+    const [statusMessage, setStatusMessage] = useState({status: '', title: '', description: ''});
     const [loading, setLoading] = useState(false);
+    const [loadingMessage, setLoadingMessage] = useState('');
     const [loadCycle, updateLoadCycle] = useState(0)
 
     const {provider, model, availableModels} = modelChoice;
@@ -52,8 +56,10 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
         }
     }, [activeModel, provider, model])
 
-    useEffect(()=>{setLoading(false)},[response])
-
+    // useEffect(()=>{setLoading(false)},[response])
+    useEffect(()=>{
+        if (loading) resetStatus();
+    },[loading])
     
 
     // Definitions - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -65,7 +71,7 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
         if (modelNeedsReloading) {
             const res = await requestModelChange({}, `${provider}/${model}`, setLoading, setResponse);
             if (res) {
-                console.log("RELOADED AIFH Model!");
+                console.log("RELOADED AI HF Model!");
                 console.log(res);
                 const {ModelUpdated} = res.data;
                 setActiveModel(ModelUpdated);
@@ -91,6 +97,10 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
     const setModelType = (e : any) => {
         console.log(e.target.value)
         setModelChoice(prev => ({...prev, model: e.target.value}))
+    }
+
+    const resetStatus = () => {
+        setStatusMessage({status: '', title: '', description: ''});
     }
     
     // JSX - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -135,36 +145,46 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
                         onChange={(e) => {setPrompt(e.target.value)}}
                     />
                     <button 
+                        disabled={loading}
                         type="submit" className="btn-base" style={{margin: "0 auto"}}
                     > {modelNeedsReloading ? 'RELOAD' : 'Submit'}
                     </button>
-                    {/* <CSVEditor setLoading={setLoading} setResponse={setResponse}/> */}
-                    
                 </div>
-                { !modelNeedsReloading && <FineTuner setLoading={setLoading} setResponse={setResponse}/>}
+                
+                
             </form>
+            <Flex justifyContent={'center'}>
+                {loading ?
+                    <div style={{minHeight:'200px'}}>
+                        <Spinner
+                            thickness='4px'
+                            speed='0.65s'
+                            emptyColor='gray.200'
+                            color='blue.500'
+                            size='xl'
+                        />
+                    </div>
+                    : 
+                    <div style={{minHeight:'200px'}}></div>
+                }
+            </Flex>
+            { !modelNeedsReloading && <FineTuner setLoading={setLoading} setResponse={setResponse} setStatusMessage={setStatusMessage}/>}
             
             <article style={{display: 'flex', alignItems: 'center', flexDirection: 'column',padding:'2%', margin: '8%', borderTop: '1px solid black'}}>
-                {loading &&
+                
+            {statusMessage.status && 
                 <div>
-                    <Spinner
-                        thickness='4px'
-                        speed='0.65s'
-                        emptyColor='gray.200'
-                        color='blue.500'
-                        size='xl'
-                    />
-                </div>
-                }
-
-                {response && 
+                    <StatusAlert status={statusMessage.status} title={statusMessage.title} description={statusMessage.description}/>
+                </div>}
+                {/* {response && 
                 <div>
                     <h3 style={{fontSize: '22pt'}}>RESPONSE</h3>
                     <p>
                         {response}
                     </p>
-                </div>}
+                </div>} */}
             </article>
+            <ModelStatus/>
         </section>
     );
   }

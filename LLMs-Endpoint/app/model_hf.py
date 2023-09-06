@@ -41,13 +41,11 @@ def create_bnb_config():  # load_in_4bit, bnb_4bit_use_double_quant, bnb_4bit_qu
     # Compute data type for 4-bit base models
     bnb_4bit_compute_dtype = torch.bfloat16
 
-    bnb_config = (
-        BitsAndBytesConfig(  # load_in_8bit=True, llm_int8_skip_modules=["lm_head"]
-            load_in_4bit=load_in_4bit,
-            bnb_4bit_use_double_quant=bnb_4bit_use_double_quant,
-            bnb_4bit_quant_type=bnb_4bit_quant_type,
-            bnb_4bit_compute_dtype=bnb_4bit_compute_dtype,
-        )
+    bnb_config = BitsAndBytesConfig(
+        load_in_4bit=load_in_4bit,
+        bnb_4bit_use_double_quant=bnb_4bit_use_double_quant,
+        bnb_4bit_quant_type=bnb_4bit_quant_type,
+        bnb_4bit_compute_dtype=bnb_4bit_compute_dtype,
     )
 
     return bnb_config

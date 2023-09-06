@@ -27,7 +27,7 @@ export async function requestModelChange (data : any, newModel : string, setLoad
     return response;
 }
 
-export async function postCsvTrainingData (csvData : string, setLoading : any, setResponse : any) {
+export async function postCsvTrainingData (csvData : string, setLoading : any) {
     const headers = {
         'Content-Type': 'application/json',
     };
@@ -35,11 +35,32 @@ export async function postCsvTrainingData (csvData : string, setLoading : any, s
     setLoading(true);
     const response = await axios.post(baseAPI_URL + `api/fine-tune`, {csvData}, {headers})
     if (response.data) {
-        setResponse(response.data.response)
+        const success = response.data.response == "CSV preprocessed successfully";
+        return success;
     }
+
+    setLoading(false);
+    return false;
+    // if (response.data) {
+    //     setResponse(response.data.response)
+    // }
 }
 
-export async function initTraining (trainingData : any, setLoading : any, setResponse : any) {
+export async function verifyDataset (setLoading : any, setStatusMessage: any) {
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+    
+    console.log('Verifying the validity of the dataset...');
+    setLoading(true);
+    const response = await axios.get(baseAPI_URL + `api/fine-tune`, {headers})
+    if (response.data) {
+        return response.data.datasetValid;
+    }
+    setLoading(false);
+}
+
+export async function initTraining (trainingData : any, setLoading : any) {
     const headers = {
         'Content-Type': 'application/json',
     };
@@ -47,6 +68,9 @@ export async function initTraining (trainingData : any, setLoading : any, setRes
     setLoading(true);
     const response = await axios.post(baseAPI_URL + `api/train`, {trainingData}, {headers})
     if (response.data) {
-        setResponse(response.data.response)
-    }
+        setLoading(false);
+        return response.status == 200
+    } else {
+        return false
+    };
 }
