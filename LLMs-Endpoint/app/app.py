@@ -7,40 +7,30 @@ import torch
 from datasets import Dataset, load_dataset
 from model_hf import ModelHF
 import asyncio
-from dotenv import load_dotenv
-import os
-
-#! PRE - INIT - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-load_dotenv()
-
-dev_mode = os.getenv("DEV_MODE")
-lazy_mode = dev_mode == "lazy-dev"
-full_path = "./LLMs-Endpoint/models/"
-lazy_path = "./models/"
-cache_dir_path = lazy_path if lazy_mode else full_path
-
-torch.cuda.empty_cache()
 
 #! INITIALIZATIONS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+torch.cuda.empty_cache()
+
+
 app = Quart(__name__)
 cors(app)
 print("ML Server starting...")
 
 
 active_model_name = "meta-llama/Llama-2-7b-hf"
+cache_dir_path = "./LLMs-Endpoint/models/"
 
 
-# # Define an asynchronous function to create the active_model
-# async def init_model():
-#     return await ModelHF.create(active_model_name, cache_dir_path + active_model_name)
+# Define an asynchronous function to create the active_model
+async def init_model():
+    return await ModelHF.create(active_model_name, cache_dir_path + active_model_name)
 
 
-# # Define a lambda that calls the asynchronous function
-# set_active_model = lambda: asyncio.run(init_model())
+# Define a lambda that calls the asynchronous function
+set_active_model = lambda: asyncio.run(init_model())
 
-# # Uncomment this line to immediately load model once the app runs:
-# app.active_model: ModelHF = set_active_model()
+# Uncomment this line to immediately load model once the app runs:
+app.active_model: ModelHF = set_active_model()
 
 
 async def on_model_set(name=""):
@@ -105,14 +95,13 @@ async def verify_dataset():
 @app.route("/fine-tune", methods=["POST"])
 async def process_csv():
     print("Got CSV Request! Processing...")
+
     csv_data = await request.get_json()
     csv_data_str = csv_data.get("csvData")
 
-    # Convert CSV data to Pandas DataFrame
     df = pd.read_csv(io.StringIO(csv_data_str))
     df = df.fillna("")
     df.to_csv("./LLMs-Endpoint/app/train.csv", index=False)
-
     dataset = Dataset.from_pandas(df)
 
     pre_train = await app.active_model.pre_train(dataset=dataset)

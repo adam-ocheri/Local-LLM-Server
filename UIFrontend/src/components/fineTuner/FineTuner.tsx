@@ -33,6 +33,7 @@ export default function FineTuner({setLoading, setResponse, setStatusMessage} : 
         } else {
             setErrorMessage( 'check your dataset format & see logs for more info', "CSV Preprocessing Failed ");
         }
+        setLoading(false);
     }
 
     async function startTraining() {     
@@ -48,6 +49,7 @@ export default function FineTuner({setLoading, setResponse, setStatusMessage} : 
         } else {
             setErrorMessage("Must have a dataset pre-processed prior to training a model!", 'Unable to Train Model');
         }
+        setLoading(false);
     }
 
     return (

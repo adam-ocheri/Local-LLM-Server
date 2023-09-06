@@ -4,7 +4,7 @@ import { postPrompt, requestModelChange } from "@/utils/apiService";
 import { IHFModel } from "@/utils/hfModel";
 import { ChangeEvent, useEffect, useState } from "react"
 import CSVEditor from "../csvEditor/CSVEditor";
-import { Flex, Spinner } from "@chakra-ui/react";
+import { Flex, Select, Spinner } from "@chakra-ui/react";
 import FineTuner from "../fineTuner/FineTuner";
 import StatusAlert from "../statusAlert/StatusAlert";
 import ModelStatus from "../llmStatus/ModelStatus";
@@ -78,6 +78,7 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
             }
         } else {
             await postPrompt(prompt, activeModel, setLoading, setResponse);
+            setLoading(false)
         }
     }
 
@@ -106,24 +107,24 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
     // JSX - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
     return (
         <section>
-            <form style={{display: 'flex', justifyContent: 'center', flexDirection: 'column'}} onSubmit={(e) => {postRequest(e)}}>
+            <form style={{display: 'flex', justifyContent: 'center', flexDirection: 'column', background: '#12121243', borderRadius: '8px'}} onSubmit={(e) => {postRequest(e)}}>
                 <div style={{display: 'flex', justifyContent: 'center', flexDirection: 'row'}}>
-                    <div style={{display: 'flex', justifyContent: 'center', flexDirection: 'column', margin: '1%'}}>
+                    <div style={{display: 'flex', justifyContent: 'center', flexDirection: 'column', margin: '1%', textAlign: 'center'}}>
                         <label htmlFor="providerSelect">Provider</label>
-                        <select disabled={loading} onChange={(e) => {setProvider(e)}}>
+                        <Select background={'white'} disabled={loading} onChange={(e) => {setProvider(e)}}>
                             {providers.map((p, index) => 
                             <option key={`PDR_${index}`} value={p.provider} >{p.provider}</option>
                             )}
-                        </select>
+                        </Select>
                     </div>
                     
-                    <div style={{display: 'flex', justifyContent: 'center', flexDirection: 'column', margin: '1%'}}>
+                    <div style={{display: 'flex', justifyContent: 'center', flexDirection: 'column', margin: '1%', textAlign: 'center'}}>
                         <label htmlFor="modelSelect">Model</label>
-                        <select disabled={loading} onChange={(e) => {setModelType(e)}}>
+                        <Select background={'white'} disabled={loading} onChange={(e) => {setModelType(e)}}>
                             {modelChoice.availableModels.map((model, index) => 
                             <option key={`MDL_${index}`} value={model} >{model}</option>
                         )}
-                        </select>
+                        </Select>
                     </div>
                     {modelNeedsReloading && 
                     <div>
@@ -152,22 +153,30 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
                 </div>
                 
                 
+                <Flex justifyContent={'center'}>
+                    {response && !loading && 
+                    <Flex justifyContent={'center'} flexDirection={'column'} background={'ButtonShadow'} borderRadius={'md'} padding={'8'} margin={'8'}>
+                        <h3 style={{fontSize: '22pt', background: 'black', color: 'white', borderRadius: '6px', padding: '8px'}}>RESPONSE</h3>
+                        <p style={{padding: '6px', margin: '8px'}}>
+                            {response}
+                        </p>
+                    </Flex>}
+                    {loading ?
+                        <div style={{minHeight:'200px', margin: '20px'}}>
+                            <Spinner
+                                thickness='4px'
+                                speed='0.65s'
+                                emptyColor='gray.200'
+                                color='blue.500'
+                                size='xl'
+                            />
+                        </div>
+                        : 
+                        <div style={{minHeight:'200px'}}></div>
+                    }
+                </Flex>
             </form>
-            <Flex justifyContent={'center'}>
-                {loading ?
-                    <div style={{minHeight:'200px'}}>
-                        <Spinner
-                            thickness='4px'
-                            speed='0.65s'
-                            emptyColor='gray.200'
-                            color='blue.500'
-                            size='xl'
-                        />
-                    </div>
-                    : 
-                    <div style={{minHeight:'200px'}}></div>
-                }
-            </Flex>
+            
             { !modelNeedsReloading && <FineTuner setLoading={setLoading} setResponse={setResponse} setStatusMessage={setStatusMessage}/>}
             
             <article style={{display: 'flex', alignItems: 'center', flexDirection: 'column',padding:'2%', margin: '8%', borderTop: '1px solid black'}}>
@@ -176,13 +185,7 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
                 <div>
                     <StatusAlert status={statusMessage.status} title={statusMessage.title} description={statusMessage.description}/>
                 </div>}
-                {/* {response && 
-                <div>
-                    <h3 style={{fontSize: '22pt'}}>RESPONSE</h3>
-                    <p>
-                        {response}
-                    </p>
-                </div>} */}
+                
             </article>
             <ModelStatus/>
         </section>

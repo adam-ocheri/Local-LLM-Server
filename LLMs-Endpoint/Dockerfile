@@ -10,7 +10,7 @@ RUN pip install huggingface-hub python-dotenv
 
 RUN . /app/.env && huggingface-cli login --token "$HUGGINGFACE_TOKEN"
 
-RUN pip install --no-cache-dir -r requirements.txt && pip3 install torch --index-url https://download.pytorch.org/whl/cu117
+RUN pip install --no-cache-dir -r requirements.txt 
 
 EXPOSE 5000
 
