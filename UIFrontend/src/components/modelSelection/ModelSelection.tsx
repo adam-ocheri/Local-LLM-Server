@@ -178,7 +178,7 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
             
             { !modelNeedsReloading && <FineTuner setLoading={setLoading} setResponse={setResponse} setStatusMessage={setStatusMessage}/>}
             
-            <article style={{display: 'flex', alignItems: 'center', flexDirection: 'column',padding:'2%', margin: '8%', borderTop: '1px solid black'}}>
+            <article style={{display: 'flex', alignItems: 'center', flexDirection: 'column',padding:'2%', margin: '8%'}}>
                 
             {statusMessage.status && 
                 <div>
@@ -186,7 +186,7 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
                 </div>}
                 
             </article>
-            <ModelStatus/>
+            {/* <ModelStatus/> */}
         </section>
     );
   }
