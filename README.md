@@ -10,7 +10,7 @@ For more info, visit https://huggingface.co/models
 ## Specs
 
 To leverage the large cache size of the LLMs, these are kept as a Volume for the docker container.
-This means, that with each time the image is built and run the cache files would be downloaded afresh. For development, cache is downloaded once and will be stored in the `./LLMs-Flask/models` directory after files are finished downloading.
+This means, that with each time the image is built and run the cache files would be downloaded afresh. For development, cache is downloaded once and will be stored in the `./LLMs-Endpoint/models` directory after files are finished downloading.
 
 - Min. installed Docker image size: 6.8 GB (after installing all dependencies)
 - Min. default container size: 19.8 GB (after the container loaded up and finished downloading the default `Llama-7b` model ; This can be changed by the user)
@@ -35,7 +35,7 @@ Then run the following commands:
 
 1. **UI Frontend** - `cd UIFrontend && npm install`
 2. **Node Backend** - `cd BackendAPI-Node && npm install`
-3. **Py LLM Server** - `cd LLMs-Endpoint/app && pip install --no-cache-dir -r requirements.txt`
+3. **Py LLM Server** - `cd LLMs-Endpoint/app && pip install --no-cache-dir -r requirements.txt && pip install bitsandbytes==<version> --prefer-binary --extra-index-url=https://jllllll.github.io/bitsandbytes-windows-webui && pip3 install torch --index-url https://download.pytorch.org/whl/cu117`
 
 ### Development
 
@@ -49,6 +49,34 @@ Run the following commands to start development:
 
 ### Production Setup
 
-docker-compose up --build --no-cache
+The 3 services are bundled together into a container cluster using Docker Compose.
+This makes it easier to later deploy the entire app as a whole to any cloud provider of choice.
+
+To build and run the container locally, you first need to have Docker Engine installed on your system - https://docs.docker.com/engine/install/
+Then, make sure you put your HuggingFace token in the `.env` file under the `/LLMs-Endpoint` directory. This is crucial for you to be able to connect to HuggingFace and download the models within the docker environment.
+
+Once Docker is installed, the app can simply be built using the command `docker-compose up`
+To remove the containers and stop the app, use `docker-compose down`.
 
 ## Usage
+
+- Load any LlamaV2 model (or any other LLM from HF)
+- Make inferences from a browser-based UI
+- Easily Use custom data to fine-tune and further train your models
+
+**UPCOMING FEATURES**
+
+- train/test sets split
+- Post-training evaluation and benchmarking
+- More info output in the UI during training
+
+## Troubleshooting
+
+If you are attempting to connect to HuggingFace or trying to download a model but facing errors, please first check this link to see the status of all HF online services: https://status.huggingface.co/
+
+If you are facing errors when building the docker containers, try increasing the max image size in the docker engine settings. The LLM server takes up a lot of disk memory to download and install the dependencies for all the required packages.
+Once that's done, try running `docker-compose build --no-cache`.
+
+For any other issues you may face, please submit an Issue in this repository and provide details of your environment and hardware setup, as well as any code related area of concern +/ console logs.
+
+Happy coding!

@@ -1,8 +1,11 @@
 instruction,input,output
-Row 1 example A,Row 1 example B,Row 1 example C
-Row 2 example A,Row 2 example B,Row 2 example C
-Row 3 example A,Row 3 example B,Row 3 example C
-,,
-,,
-,,
-,,
+Business Analyst,1,45000
+Junior Consultant,2,50000
+Senior Consultant,3,60000
+Manager,4,80000
+Country Manager,5,110000
+Region Manager,6,150000
+Partner,7,200000
+Senior Partner,8,300000
+C-level,9,500000
+CEO,10,1000000

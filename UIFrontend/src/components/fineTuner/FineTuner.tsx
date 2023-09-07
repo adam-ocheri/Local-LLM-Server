@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
 import BasicAccordion from '../basicAccordion/BasicAccordion'
-import BasicTabViewer from '../basicTabViewer/BasicTabViewer'
-import CSVEditor from '../csvEditor/CSVEditor'
 import { Button, Flex, TabPanel } from '@chakra-ui/react'
 import CSVCreator from '../csvCreator/CSVCreator'
 import FineTuneSettings from './FinetuneSettings'

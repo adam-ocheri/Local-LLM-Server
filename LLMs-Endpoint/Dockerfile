@@ -10,7 +10,7 @@ RUN pip install huggingface-hub python-dotenv
 
 RUN . /app/.env && huggingface-cli login --token "$HUGGINGFACE_TOKEN"
 
-RUN pip install --no-cache-dir -r requirements.txt 
+RUN pip install --no-cache-dir -r requirements.txt && pip install bitsandbytes==0.41.1 --prefer-binary --extra-index-url=https://jllllll.github.io/bitsandbytes-windows-webui && pip3 install torch --index-url https://download.pytorch.org/whl/cu117
 
 EXPOSE 5000
 

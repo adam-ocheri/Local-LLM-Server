@@ -3,7 +3,6 @@
 import { postPrompt, requestModelChange } from "@/utils/apiService";
 import { IHFModel } from "@/utils/hfModel";
 import { ChangeEvent, useEffect, useState } from "react"
-import CSVEditor from "../csvEditor/CSVEditor";
 import { Flex, Select, Spinner } from "@chakra-ui/react";
 import FineTuner from "../fineTuner/FineTuner";
 import StatusAlert from "../statusAlert/StatusAlert";

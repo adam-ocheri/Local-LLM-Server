@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import CSVEditor from '../csvEditor/CSVEditor';
 import { Badge, Box, Button, Flex, Text } from '@chakra-ui/react';
-import { parse, unparse } from 'papaparse';
 
 function CSVCreator({ csvContent, setCSVContent, inCsv  } : any) {
     // Init data - - - - - - - - - - - - - - - - - - - - - - - - 
