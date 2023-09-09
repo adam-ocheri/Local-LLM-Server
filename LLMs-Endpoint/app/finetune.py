@@ -294,6 +294,7 @@ async def merge_weights(model, model_name, training_data):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     tokenizer.save_pretrained(merge_dir)
 
+    print("Fine-tune training completed with success!")
     # upload to hub
     push_to_hub = training_data.get("pushToHub")
     if push_to_hub:

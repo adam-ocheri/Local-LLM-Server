@@ -5,14 +5,14 @@ import NumberInputBase from '../primitives/numberInputBase/NumberInputBase';
 
 export default function FineTuneSettings({ getTrainingParams }: any) {
     const [trainingParams, setTrainingParams] = useState({
-        maxSteps: 16,
+        maxSteps: 8,
         matricesUpdateRank: 16,
         scalingFactor: 32,
         perDeviceTrainBatchSize: 1,
         gradientAccumulationSteps: 512,
         warmupSteps: 0,
         bias: 'none',
-        taskType: 'Causal Language Model',
+        taskType: 'CAUSAL_LM',
         learningRate: 0.00005,
         dropoutProbability: 0.1,
         pushToHub: 'false',
@@ -138,7 +138,7 @@ export default function FineTuneSettings({ getTrainingParams }: any) {
                         value={dropoutProbability}
                         min={0.0}
                         max={1.0}
-                        step={0.05}
+                        step={0.01}
                         updateTrainingParams={updateTrainingParams}
                     />
                     <SliderInputBase

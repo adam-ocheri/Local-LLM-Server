@@ -8,4 +8,5 @@ LLMs-Endpoint/trained-model
 LLMs-Endpoint/app/XVolatile.egg-info
 BackendAPI-Node/.vscode
 BackendAPI-Node/node_modules
+BackendAPI-Node/dist
 BackendAPI-Node/node_modules/@types
