@@ -21,21 +21,7 @@ export default function ModelStatus() {
   
     return (
       <Wrap>
-        {statuses.map((status : any, i) => (
-          <WrapItem key={i}>
-            <Button
-              onClick={() =>
-                toast({
-                  title: `${status} toast`,
-                  status: status,
-                  isClosable: true,
-                })
-              }
-            >
-              Show {status} toast
-            </Button>
-          </WrapItem>
-        ))}
+        <div>TOAST COMP</div>
       </Wrap>
     )
   }
