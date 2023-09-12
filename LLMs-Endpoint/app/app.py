@@ -3,14 +3,17 @@ from quart import Quart, request, jsonify, json, g
 from quart_cors import cors
 import pandas as pd
 import io
+import os
 import torch
 from datasets import Dataset, load_dataset
-from model_hf import ModelHF
 import asyncio
+from model_hf import ModelHF
+from finetune import merge_dir
 
 #! INITIALIZATIONS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 torch.cuda.empty_cache()
-
+trained_models_exist = os.access(merge_dir, 0)
+print("trained_models_exist?: ", trained_models_exist)
 
 app = Quart(__name__)
 cors(app)
@@ -18,12 +21,13 @@ print("ML Server starting...")
 
 
 active_model_name = "meta-llama/Llama-2-7b-hf"
-cache_dir_path = "./LLMs-Endpoint/models/"
+cache_dir_path = "./LLMs-Endpoint/models/" + active_model_name
+model_path = merge_dir if trained_models_exist else cache_dir_path
 
 
 # Define an asynchronous function to create the active_model
 async def init_model():
-    return await ModelHF.create(active_model_name, cache_dir_path + active_model_name)
+    return await ModelHF.create(active_model_name, model_path)
 
 
 # Define a lambda that calls the asynchronous function
@@ -35,9 +39,7 @@ app.active_model: ModelHF = set_active_model()
 
 async def on_model_set(name=""):
     active_model_name = name
-    app.active_model = await ModelHF.create(
-        active_model_name, cache_dir_path + active_model_name
-    )
+    app.active_model = await ModelHF.create(active_model_name, model_path)
     return jsonify({"ModelUpdated": active_model_name}), 200
 
 
@@ -64,15 +66,42 @@ async def test_front():
 
 @app.route("/gen", methods=["POST"])
 async def generate():
+    # Extract data from request
     input_data = await request.get_json()
+    temp = input_data.get("temperature")
+    beams = input_data.get("numBeams")
+    max_answer_length = input_data.get("maxLength")
     prompt = input_data.get("prompt")
+
+    # Validate request string length is not longer than the number of the "num_returned_sequences"
+    if len(prompt) >= max_answer_length:
+        max_answer_length = len(prompt) * 2
+
+    # Generate and perform the inference
     input_text = prompt
+    input_ids = (
+        torch.tensor(app.active_model.tokenizer.encode(input_text)).unsqueeze(0).cuda()
+    )
     inputs = app.active_model.tokenizer.encode(input_text, return_tensors="pt")
     outputs = app.active_model.model.generate(
-        inputs, max_length=50, num_return_sequences=1, temperature=0.7
+        # inputs,
+        input_ids=input_ids,
+        temperature=temp,
+        max_length=max_answer_length,
+        num_return_sequences=1,
+        num_beams=beams,
     )
-    response_text = app.active_model.tokenizer.decode(outputs[0])
-    return jsonify({"response": response_text}), 200
+
+    # Return the answer
+    if len(outputs) == 1:
+        response_text = app.active_model.tokenizer.decode(outputs[0])
+        return jsonify({"response": response_text}), 200
+    else:
+        output_array = []
+        for i in range(0, len(outputs)):
+            output_array.append(app.active_model.tokenizer.decode(outputs[i]))
+        # response_text = app.active_model.tokenizer.decode(outputs)
+        return jsonify({"response": output_array}), 200
 
 
 @app.route("/reload", methods=["POST"])

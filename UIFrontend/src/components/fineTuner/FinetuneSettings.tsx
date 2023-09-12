@@ -109,7 +109,7 @@ export default function FineTuneSettings({ getTrainingParams }: any) {
                         min={8}
                         max={64}
                         step={8}
-                        updateTrainingParams={updateTrainingParams}
+                        updateParams={updateTrainingParams}
                     />
                     <NumberInputBase 
                         name={'scalingFactor'}
@@ -118,7 +118,7 @@ export default function FineTuneSettings({ getTrainingParams }: any) {
                         min={8}
                         max={64}
                         step={8}
-                        updateTrainingParams={updateTrainingParams}
+                        updateParams={updateTrainingParams}
                     />
                     <NumberInputBase 
                         name={'perDeviceTrainBatchSize'}
@@ -127,7 +127,7 @@ export default function FineTuneSettings({ getTrainingParams }: any) {
                         min={1}
                         max={64}
                         step={1}
-                        updateTrainingParams={updateTrainingParams}
+                        updateParams={updateTrainingParams}
                     />
                 </Flex>
 
@@ -139,7 +139,7 @@ export default function FineTuneSettings({ getTrainingParams }: any) {
                         min={0.0}
                         max={1.0}
                         step={0.01}
-                        updateTrainingParams={updateTrainingParams}
+                        updateParams={updateTrainingParams}
                     />
                     <SliderInputBase
                         name={'learningRate'}
@@ -148,7 +148,7 @@ export default function FineTuneSettings({ getTrainingParams }: any) {
                         min={0.00005}
                         max={0.2}
                         step={0.00001}
-                        updateTrainingParams={updateTrainingParams}
+                        updateParams={updateTrainingParams}
                     />
                     <SliderInputBase
                         name={'maxSteps'}
@@ -157,7 +157,7 @@ export default function FineTuneSettings({ getTrainingParams }: any) {
                         min={8}
                         max={10000}
                         step={1}
-                        updateTrainingParams={updateTrainingParams}
+                        updateParams={updateTrainingParams}
                     />
                     <SliderInputBase
                         name={'warmupSteps'}
@@ -166,7 +166,7 @@ export default function FineTuneSettings({ getTrainingParams }: any) {
                         min={0}
                         max={64}
                         step={1}
-                        updateTrainingParams={updateTrainingParams}
+                        updateParams={updateTrainingParams}
                     />
                     <SliderInputBase
                         name={'gradientAccumulationSteps'}
@@ -175,7 +175,7 @@ export default function FineTuneSettings({ getTrainingParams }: any) {
                         min={0}
                         max={1024}
                         step={1}
-                        updateTrainingParams={updateTrainingParams}
+                        updateParams={updateTrainingParams}
                     />
                 </Flex>
             </Flex>

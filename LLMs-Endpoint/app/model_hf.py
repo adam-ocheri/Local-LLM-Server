@@ -176,12 +176,12 @@ class ModelHF:
         """
 
         # Pull model configuration
-        conf = self.model.config
+        config = self.model.config
         # Initialize a "max_length" variable to store maximum sequence length as null
         max_length = None
         # Find maximum sequence length in the model configuration and save it in "max_length" if found
         for length_setting in ["n_positions", "max_position_embeddings", "seq_length"]:
-            max_length = getattr(self.model.config, length_setting, None)
+            max_length = getattr(config, length_setting, None)
             if max_length:
                 print(f"Found max lenth: {max_length}")
                 break

@@ -7,6 +7,8 @@ import { Flex, Select, Spinner } from "@chakra-ui/react";
 import FineTuner from "../fineTuner/FineTuner";
 import StatusAlert from "../statusAlert/StatusAlert";
 import ModelStatus from "../llmStatus/ModelStatus";
+import SliderInputBase from "../primitives/sliderInputBase/SliderInputBase";
+import BasicAccordion from "../basicAccordion/BasicAccordion";
 
 
 export default function ModelSelection({providers} : {providers : IHFModel[]}) {
@@ -21,6 +23,7 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
     const [activeModel, setActiveModel] = useState('');
     const [modelNeedsReloading, setModelNeedsReloading] = useState(false);
     const [prompt, setPrompt] = useState('');
+    const [promptParams, setPromptParams] = useState({temperature: 0.7, numBeams: 1, maxLength: 150})
     const [response, setResponse] = useState('');
     const [statusMessage, setStatusMessage] = useState({status: '', title: '', description: ''});
     const [loading, setLoading] = useState(false);
@@ -28,6 +31,7 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
     const [loadCycle, updateLoadCycle] = useState(0)
 
     const {provider, model, availableModels} = modelChoice;
+    const {temperature, numBeams, maxLength} = promptParams;
 
     useEffect(() => {
       setModelChoice({
@@ -55,13 +59,37 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
         }
     }, [activeModel, provider, model])
 
-    // useEffect(()=>{setLoading(false)},[response])
     useEffect(()=>{
-        if (loading) resetStatus();
+        if (loading) {
+            resetStatus();
+            setResponse('');
+        }
     },[loading])
     
 
     // Definitions - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+    const updatePromptParams = (e: any, name: string) => {
+        console.log("Updating training params...", e)
+
+        if (e?.target && e.type == 'change') {
+            setPromptParams(prev => ({
+                ...prev,
+                [e.target.name]: e.target.checked
+            }))
+        } else if (e?.target ) {
+            setPromptParams(prev => ({
+                ...prev,
+                [e.target.name]: e.target.value
+            }))
+        } 
+        else {
+            setPromptParams(prev => ({
+                ...prev,
+                [name]: e
+            }))
+        }
+    }
+
     const postRequest = async (e : any) => {
         e.preventDefault();
         if (prompt === '' && !modelNeedsReloading) return;
@@ -76,7 +104,7 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
                 setActiveModel(ModelUpdated);
             }
         } else {
-            await postPrompt(prompt, activeModel, setLoading, setResponse);
+            await postPrompt({prompt, temperature, numBeams, maxLength}, activeModel, setLoading, setResponse);
             setLoading(false)
         }
     }
@@ -145,10 +173,50 @@ export default function ModelSelection({providers} : {providers : IHFModel[]}) {
                         onChange={(e) => {setPrompt(e.target.value)}}
                     />
                     <button 
-                        disabled={loading}
-                        type="submit" className="btn-base" style={{margin: "0 auto"}}
-                    > {modelNeedsReloading ? 'RELOAD' : 'Submit'}
-                    </button>
+                            disabled={loading}
+                            type="submit" className="btn-base" style={{margin: "0 auto"}}
+                        > {modelNeedsReloading ? 'RELOAD' : 'Submit'}
+                        </button>
+                    {/* <Flex direction={'row'} margin={'8'} justifyContent={'space-around'}> */}
+                    <BasicAccordion title={'Prompt Settings'} fontSize={'8pt'}>
+                        <Flex direction={'row'} margin={'8'} justifyContent={'center'} color={'white'} background={'#01010122'} borderRadius={'2xl'}>
+                            <Flex direction={'column'} >
+                                <SliderInputBase
+                                    name={'numBeams'}
+                                    title={'Beams Number'}
+                                    value={numBeams}
+                                    min={1}
+                                    max={15}
+                                    step={1}
+                                    updateParams={updatePromptParams}
+                                />
+                                <SliderInputBase
+                                name={'maxLength'}
+                                title={'Max Sequence Length'}
+                                value={maxLength}
+                                min={50}
+                                max={500}
+                                step={1}
+                                updateParams={updatePromptParams}
+                            />
+                            </Flex>
+                            <Flex direction={'column'}>
+                                <SliderInputBase
+                                    name={'temperature'}
+                                    title={'Inference Temperature'}
+                                    value={temperature}
+                                    min={0}
+                                    max={1}
+                                    step={0.01}
+                                    updateParams={updatePromptParams}
+                                />
+                            </Flex>  
+                            
+                        </Flex>
+                    </BasicAccordion>    
+                    {/* </Flex> */}
+                    
+                    
                 </div>
                 
                 

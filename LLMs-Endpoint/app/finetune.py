@@ -145,7 +145,7 @@ async def fine_tune(
     model = prepare_model_for_kbit_training(model)
 
     # Get LoRA module names
-    # target_modules = find_all_linear_names(model)
+    target_modules = find_all_linear_names(model)
 
     # Create PEFT configuration for these modules and wrap the model to PEFT
     peft_config = create_peft_config(lora_r, lora_alpha, lora_dropout, bias, task_type)
