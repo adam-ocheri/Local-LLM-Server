@@ -287,12 +287,14 @@ async def merge_weights(model, model_name, training_data):
     # Save fine-tuned model at a new location
     print("\nSaving fine-tuned model at a new location")
     os.makedirs(merge_dir, exist_ok=True)
-    model.save_pretrained(merge_dir, safe_serialization=True)
+    model.save_pretrained(
+        merge_dir + "/" + model_name + "/model", safe_serialization=True
+    )
 
     # Save tokenizer for easy inference
     print("\nSaving tokenizer for easy inference")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    tokenizer.save_pretrained(merge_dir)
+    tokenizer.save_pretrained(merge_dir + "/" + model_name + "/token")
 
     print("Fine-tune training completed with success!")
     # upload to hub

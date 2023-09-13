@@ -15,6 +15,11 @@ torch.cuda.empty_cache()
 trained_models_exist = os.access(merge_dir, 0)
 print("trained_models_exist?: ", trained_models_exist)
 
+if trained_models_exist:
+    trained_model_dirs = os.listdir(merge_dir)
+    print("trained_model_dirs: ", trained_model_dirs)
+
+
 app = Quart(__name__)
 cors(app)
 print("ML Server starting...")
@@ -22,7 +27,8 @@ print("ML Server starting...")
 
 active_model_name = "meta-llama/Llama-2-7b-hf"
 cache_dir_path = "./LLMs-Endpoint/models/" + active_model_name
-model_path = merge_dir if trained_models_exist else cache_dir_path
+trained_model_path = merge_dir + "/" + active_model_name
+model_path = cache_dir_path
 
 
 # Define an asynchronous function to create the active_model

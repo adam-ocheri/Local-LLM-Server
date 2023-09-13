@@ -74,7 +74,7 @@ async def load_model(model_name, cache_dir, bnb_config):
 
     # Load model tokenizer with the user authentication token
     tokenizer = AutoTokenizer.from_pretrained(
-        model_name, cache_dir=cache_dir + "/token", use_auth_token=True
+        model_name, cache_dir=cache_dir + "/token"
     )
 
     # Set padding token as EOS token
@@ -141,8 +141,8 @@ class ModelHF:
     def __init__(self, model, tokenizer, model_name):
         self.tokenizer = tokenizer
         self.model = model
-        self.dataset = None
         self.model_name = model_name
+        self.dataset = None
 
     @classmethod
     async def create(cls, model_name_or_path, cache_dir=None):
